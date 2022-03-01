@@ -1,0 +1,320 @@
+.house {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: 100vw 100vh;
+    background-position: center;
+}
+
+.top {
+    height: 0.4rem;
+    width: 100%;
+    padding-top: 0.27rem;
+    position: relative;
+}
+
+.top-left {
+    width: 1.51rem;
+    height: 0.4rem;
+    float: left;
+    background-image: url(../../assets/wheat/information.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding-left: 0.12rem;
+}
+
+.top-left-name {
+    display: block;
+    font-weight: 500;
+    height: 0.2rem;
+    font-size: 0.14rem;
+    line-height: 0.2rem;
+    text-align: left;
+}
+
+.top-left-foot {
+    text-align: left;
+    height: 0.2rem;
+    line-height: 0.2rem;
+    width: 3.1rem;
+    position: relative;
+    display: inline-block;
+    font-size: 0.18rem;
+    -webkit-transform: scale(0.5);
+    margin-left: -0.76rem;
+}
+
+.top-left-id {}
+
+.top-left-id-num {
+    margin-left: -0.02rem;
+}
+
+.top-left-online {
+    background-image: url(../../assets/wheat/online.png);
+    background-repeat: no-repeat;
+    background-size: left;
+    background-position: left;
+    padding-left: 0.16rem;
+    margin-left: 0.27rem;
+}
+
+.top-left-online-num {
+    margin-left: 0.03rem;
+}
+
+.top-left-signal {
+    display: inline-block;
+    width: 0.17rem;
+    height: 0.13rem;
+    background-image: url(../../assets/wheat/signal.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    margin-left: 0.05rem;
+}
+
+.top-left-signal-num {
+    margin-left: 0.05rem;
+}
+
+.top-right {
+    width: 0.255rem;
+    height: 0.255rem;
+    float: right;
+    margin-right: 0.215rem;
+    margin-top: 0.075rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(../../assets/wheat/more.png);
+    background-size: 0.165rem 0.035rem;
+}
+
+.top-right-close {
+    width: 0.255rem;
+    height: 0.255rem;
+    float: right;
+    margin-right: 0.215rem;
+    margin-top: 0.075rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(../../assets/wheat/back.png);
+    background-size: 0.25rem 0.25rem;
+}
+
+.roomOwner {
+    background-image: url(../../assets/wheat/more.png);
+    background-size: 0.165rem 0.035rem;
+}
+
+.roomEnter {
+    background-image: url(../../assets/wheat/leaveroom.png);
+    background-size: 0.255rem 0.255rem;
+}
+
+.center {
+    width: 100%;
+
+}
+
+.center-top {
+    height: 0.33rem;
+    position: relative;
+}
+
+.center-top-notice {
+    width: 0.48rem;
+    height: 0.18rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(../../assets/roomicon/Notice.png);
+    background-size: 0.48rem 0.18rem;
+    margin-top: 0.08rem;
+    margin-left: 0.12rem;
+    position: relative;
+}
+
+
+
+.homeowner {
+    height: 1.27rem;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.homeowner-Templat {
+    width: 1.6rem;
+    height: 1.27rem;
+    text-align: center;
+}
+
+.homeowner-Templat-img {
+    width: 0.79rem;
+    height: 0.79rem;
+    margin-left: 0.405rem;
+    border-radius: 50%;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+}
+
+.image-ower {
+    width: 0.79rem;
+    height: 0.79rem;
+    border-radius: 50%;
+
+}
+
+.image-mute {
+    z-index: 100;
+    position: absolute;
+    right: 0.05rem;
+    bottom: 0.05rem;
+    width: 0.18rem;
+    height: 0.18rem;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 0.18rem 0.18rem;
+    background-image: url(../../assets/wheat/MuteWheat.png);
+}
+
+.homeowner-Templat-name {
+    height: 0.2rem;
+    line-height: 0.2rem;
+    font-size: 0.14rem;
+    text-align: center;
+    color: #FFFFFF;
+    margin-top: 0.09rem;
+}
+
+.homeowner-Templat-Administrators {
+    display: inline-block;
+    height: 0.2rem;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0.14rem 0.14rem;
+}
+
+.homeowner-Templat-gift {
+    background-color: rgba(255, 255, 255, 0.2);
+    text-align: center;
+    height: 0.14rem;
+    line-height: 0.14rem;
+    border-radius: 0.07rem;
+    display: inline-block;
+    padding-left: 0.15rem;
+    padding-right: 0.05rem;
+    background-repeat: no-repeat;
+    background-position: left;
+    background-image: url(../../assets/wheat/gift.png);
+    background-size: 0.14rem 0.14rem;
+}
+
+.homeowner-Templat-gift-text {
+    display: inline-block;
+    font-size: 0.12rem;
+    transform: scale(.75);
+    color: #ffffff;
+}
+
+
+.audience {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.audience-fa {
+    width: 3.64rem;
+}
+
+.audience-item {
+    float: left;
+    width: 0.91rem;
+    height: 1.06rem;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+/* 波动效果 */
+.circle {
+    width: 0.79rem;
+    height: 0.79rem;
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    background-image: linear-gradient(#FF0000 0%, #0000cc 100%);
+}
+
+.circle2 {
+    width: 0.79rem;
+    height: 0.79rem;
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    background-image: linear-gradient(#FF0000 0%, #0000cc 100%);
+}
+
+.move {
+    animation: circle-opacity 2s infinite;
+}
+
+@keyframes circle-opacity {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(1.6);
+    }
+}
+
+
+
+.room-talk {
+    width: 100%;
+    height: 1.5rem;
+    overflow: hidden;
+}
+
+/* houseover */
+.over {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.houseover {
+    color: white;
+    width: 1.8rem;
+    height: 1rem;
+    text-align: center;
+}
+
+.house-over {
+    font-size: 0.2rem;
+}
+
+.back-room-list {
+    display: block;
+    background-color: white;
+    color: black;
+    font-size: 0.12rem;
+    border-radius: 0.05rem;
+    width: 1.2rem;
+    height: 0.3rem;
+    line-height: 0.3rem;
+    margin-top: 0.2rem;
+    margin-left: 0.3rem;
+}

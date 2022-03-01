@@ -1,0 +1,42 @@
+{
+  "name": "rc_voice_room_demo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "eslint --fix --ext .js,.vue src"
+  },
+  "dependencies": {
+    "@rongcloud/rcvoiceroomlib-v1": "^1.2.0",
+    "axios": "^0.21.1",
+    "better-scroll": "^2.4.2",
+    "core-js": "^3.6.5",
+    "element-ui": "^2.15.6",
+    "js-md5": "^0.7.3",
+    "vue": "^2.6.11",
+    "vue-router": "^3.5.2",
+    "vue-scroller": "^2.2.4",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "eslint-plugin-vue": "^8.5.0",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "description": "## Project setup ``` npm install ```",
+  "main": "babel.config.js",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@pha.rongcloud.net:2222/source/RCRTC-Web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

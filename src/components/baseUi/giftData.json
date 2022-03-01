@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "url": "../../assets/gift/ic_present_0.png",
+        "price": 1,
+        "name": "小心心",
+        "isGlobal": false
+    },
+    {
+        "id": 2,
+        "url": "../../assets/gift/ic_present_1.png",
+        "price": 2,
+        "name": "话筒",
+        "isGlobal": false
+    },
+    {
+        "id": 3,
+        "url": "../../assets/gift/ic_present_2.png",
+        "price": 5,
+        "name": "麦克风",
+        "isGlobal": false
+    },
+    {
+        "id": 4,
+        "url": "../../assets/gift/ic_present_3.png",
+        "price": 10,
+        "name": "萌小鸡",
+        "isGlobal": false
+    },
+    {
+        "id": 5,
+        "url": "../../assets/gift/ic_present_4.png",
+        "price": 20,
+        "name": "手柄",
+        "isGlobal": false
+    },
+    {
+        "id": 6,
+        "url": "../../assets/gift/ic_present_5.png",
+        "price": 50,
+        "name": "奖杯",
+        "isGlobal": false
+    },
+    {
+        "id": 7,
+        "url": "../../assets/gift/ic_present_6.png",
+        "price": 100,
+        "name": "火箭",
+        "isGlobal": true
+    },
+    {
+        "id": 8,
+        "url": "../../assets/gift/ic_present_7.png",
+        "price": 200,
+        "name": "礼花",
+        "isGlobal": true
+    },
+    {
+        "id": 9,
+        "url": "../../assets/gift/ic_present_8.png",
+        "price": 10,
+        "name": "玫瑰花",
+        "isGlobal": false
+    },
+    {
+        "id": 10,
+        "url": "../../assets/gift/ic_present_9.png",
+        "price": 20,
+        "name": "吉他",
+        "isGlobal": false
+    }
+]
