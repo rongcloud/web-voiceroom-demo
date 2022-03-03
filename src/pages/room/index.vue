@@ -227,6 +227,9 @@ export default {
     handleAvatarSuccess(res, file) {
       console.log(res, file);
       this.updateObj.themePictureUrl = `${this.$store.state.defaultAddress}${res.data}`;
+       if (this.$store.state.defaultAddress.indexOf("api") != -1) {
+        this.updateObj.themePictureUrl = `https://rcrtc-api.rongcloud.net/file/show?path=${res.data}`;
+      }
       this.imgBackground = URL.createObjectURL(file.raw);
     },
 
@@ -371,8 +374,14 @@ export default {
         this.$store.dispatch("changesRoomsList", response.data.data.rooms);
       })
       .catch((err) => {
-        alert("请求失败", err);
+        // alert("请求失败", err);
       });
+
+      window.addEventListener('load', () =>{
+       if (this.$route.name != "login") {
+          this.$router.replace("/login");
+        }
+      })
   },
 };
 </script>

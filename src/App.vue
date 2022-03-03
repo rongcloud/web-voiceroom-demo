@@ -1,8 +1,11 @@
 <template>
-  <div id="app">
+<div class="bg">
+    <div id="app">
     <PromptBox />
     <router-view></router-view>
   </div>
+</div>
+
 </template>
 
 <script>
@@ -24,7 +27,7 @@ export default {
     PromptBox,
   },
   created() {
-    this.$RCVoiceRoomLib.init("pvxdm17jpw7ar");
+    this.$RCVoiceRoomLib.init("pvxdm17jpw7ar");//测试
   },
   mounted() {
     this.$RCVoiceRoomLib.on("SeatMute", () => {
@@ -69,8 +72,8 @@ export default {
         if (this.$route.name == "roomHouse") {
           await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
         }
-        if (this.$route.name != "home") {
-          this.$router.replace("/home");
+        if (this.$route.name != "login") {
+          this.$router.replace("/login");
         }
         setTimeout(() => {
           this.$router.go(0);
@@ -91,8 +94,8 @@ export default {
               this.$RCVoiceRoomLib._roomidcli
             );
           }
-          if (this.$route.name != "home") {
-            this.$router.replace("/home");
+          if (this.$route.name != "login") {
+            this.$router.replace("/login");
           }
           this.$router.go(0);
         }
@@ -454,8 +457,8 @@ export default {
       if (this.$route.name == "roomHouse") {
         await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
       }
-      if (this.$route.name != "home") {
-        this.$router.replace("/home");
+      if (this.$route.name != "login") {
+        this.$router.replace("/login");
       }
       this.$router.go(0);
     });
@@ -490,7 +493,7 @@ export default {
     this.$RCVoiceRoomLib.on("RTCPeerConnectionCloseByException", async () => {
       console.log("rtc 断开连接");
       await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
-      this.$router.replace("/home");
+      this.$router.replace("/login");
       this.$router.go(0);
     });
   },
@@ -519,12 +522,33 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100%;
-  width: 100%;
+  width: 56.25vh;
   overflow: hidden;
+  margin: auto;
+  background: #fff;
   font-size: 16px;
 }
-
 .customClass-Control {
   width: 3rem !important;
+}
+
+.bg {
+  background: url("./assets/webBg.png");
+  height: 100vh;
+}
+
+.el-drawer__wrapper {
+  width: 56.25vh !important;
+  left: calc(50vw - 28.125vh) !important;
+}
+
+.el-dialog__wrapper {
+  width: 56.25vh !important;
+  left: calc(50vw - 28.125vh) !important;
+}
+
+.v-modal {
+  width: 56.25vh !important;
+  left: calc(50vw - 28.125vh) !important;
 }
 </style>

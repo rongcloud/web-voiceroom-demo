@@ -1,9 +1,9 @@
 .house {
-    width: 100vw;
+    width: 56.25vh;
     height: 100vh;
     position: relative;
     background-repeat: no-repeat;
-    background-size: 100vw 100vh;
+    background-size: 56.25vh 100vh;
     background-position: center;
 }
 
@@ -227,6 +227,7 @@
 
 .audience {
     width: 100%;
+    min-width: 365px;
     align-items: center;
     justify-content: center;
     display: flex;

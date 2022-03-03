@@ -97,7 +97,7 @@ export default {
   position: relative;
   font-size: 0px;
   border-radius: 0px 0px 20px 20px;
-  width: 100vw;
+  width: 56.25vh;
   height: 172px;
   background: rgba(3, 6, 47, 0.2);
   color: #fff;

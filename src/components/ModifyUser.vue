@@ -15,6 +15,7 @@
       :action="this.$store.state.uploadAddress"
       :headers="{
         authorization: this.$store.state.userInfo.authorization,
+         BusinessToken: btoken,
       }"
       :on-success="handlePopupSuccess"
       :before-upload="beforePopupUpload"
@@ -117,7 +118,7 @@ export default {
       this.$store.dispatch("updateUserInfo", obj);
       this.dialogFormVisible = false;
       // this.$forceUpdate();
-      this.$router.push("/home");
+      this.$router.push("/login");
       this.$router.go(0);
     },
     //focus动作
@@ -198,7 +199,6 @@ export default {
 .popup-uploader /deep/ .el-upload {
   width: 0.7rem;
   height: 0.7rem;
-  background-color: aquamarine;
   border-radius: 50%;
 }
 
@@ -235,5 +235,6 @@ export default {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  border: 1px solid;
 }
 </style>

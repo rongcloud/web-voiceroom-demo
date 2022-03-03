@@ -172,7 +172,7 @@ export default {
   position: absolute;
   bottom: 0px;
   height: 52px;
-  width: 100vw;
+  width: 56.25vh;
 }
 .input {
   position: absolute;
@@ -196,7 +196,7 @@ export default {
 }
 .inputing {
   background: #fff !important;
-  width: 60vw;
+  width: 33.75vh;
   left: 0px;
   border-radius: 4px;
 }

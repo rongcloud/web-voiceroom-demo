@@ -276,7 +276,6 @@ export default {
       } else {
         title = this.$store.state.roomTitle;
       }
-      // console.log(title);
       if (title) {
         if (title.length > 10) {
           return title.substring(0, 10) + "...";
@@ -295,7 +294,6 @@ export default {
           roomId: this.$RCVoiceRoomLib._roomidcli,
         })
         .then((res) => {
-          console.log(res);
           this.$store.dispatch("getRoomUserList", res.data.data);
         });
       this.houseFilter = 5;
@@ -394,7 +392,6 @@ export default {
 
     //点击右上角
     clickTopRight: async function () {
-      // console.log(this.creatuser);
       if (this.creatuser) {
         this.$refs.RoomBack.RoomBackOpen(BackList);
         this.topFilter = 5;
@@ -427,7 +424,6 @@ export default {
 
     //房主设置状态控制
     ConnectOperation: function () {
-      console.log(this.$RCVoiceRoomLib.roomInfo);
       const RoomFitList = [...RoomFitItemList];
       if (this.$store.state.roomPrivate.isPrivate == 1) {
         RoomFitList[0] = {
@@ -712,7 +708,6 @@ export default {
     //管理员控制(房主)
     SeatAdminChange: async function () {
       const Manage = await this.getManageList();
-      console.log(Manage);
       this.updateAdminAndGift(Manage);
     },
 
@@ -888,7 +883,6 @@ export default {
 
     //接入事件
     msgOut: function (msg) {
-      console.log(msg);
       if (msg.replace(/\s*/g, "").length == 0) {
         this.$store.dispatch("showToast", {
           value: "消息不能为空",
@@ -902,7 +896,7 @@ export default {
         })
         .then((res) => {
           let send = true;
-          if (res.data.code == 10000 && "data" in res.data) {
+          if (res.data.code == 10000 && "data" in res.data && Object.prototype.toString.call(res.data.data).indexOf('Array') != -1) {
             for (let index = 0; index < res.data.data.length; index++) {
               if (msg.indexOf(res.data.data[index]["name"]) != -1) {
                 send = false;
@@ -977,7 +971,6 @@ export default {
           });
           console.log(error);
         }
-
         return;
       }
       if (this.$store.state.HasApply) {
@@ -1015,7 +1008,6 @@ export default {
             this.$nextTick(() => {
               this.$store.dispatch("getChatroom", this.$refs.chatroom);
               this.roomId = this.$RCVoiceRoomLib._roomidcli;
-              // console.log(this.$RCVoiceRoomLib);
               if (
                 this.$RCVoiceRoomLib.roomInfo &&
                 this.$RCVoiceRoomLib.roomInfo.seatCount
@@ -1065,9 +1057,7 @@ export default {
           roomId: this.$RCVoiceRoomLib._roomidcli,
         })
         .then(async (res) => {
-          // console.log(res);
           this.$store.dispatch("getRoomUserList", res.data.data);
-          console.log(createUser);
           this.getGiftAndMan(true);
         });
     },
@@ -1138,11 +1128,7 @@ export default {
   },
   watch: {
     listenseatInfoList: function () {
-      console.log(
-        "麦位发生变化啦,动起来,让我看到你的双手好吗？",
-        this.$RCVoiceRoomLib.seatInfoList
-      );
-      console.log(this.$store.state.roomUserList);
+      console.log("麦位发生变化啦",this.$RCVoiceRoomLib.seatInfoList);
       if (this.$store.state.roomUserList.length) {
         this.SetSeatList(this.$store.state.GiftAndManageList);
       }
@@ -1220,7 +1206,6 @@ export default {
   },
   mounted() {
     this.getRoominformation();
-    console.log(navigator.userAgent);
     if (
       navigator.userAgent.indexOf("Macintosh") > -1 &&
       navigator.userAgent.indexOf("Safari") > -1 &&
@@ -1240,6 +1225,12 @@ export default {
           console.log("取消");
         });
     }
+
+    window.addEventListener('load', () =>{
+      if (this.$route.name != "login") {
+        this.$router.replace("/login");
+      }
+    })
   },
 };
 </script>

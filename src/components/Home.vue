@@ -98,10 +98,20 @@ export default {
   created() {
     // console.log(this.$store.state.userInfo);
   },
+  mounted(){
+      window.addEventListener('load', () =>{
+       if (this.$route.name != "login") {
+          this.$router.replace("/login");
+        }
+      })
+  },
   components: {
     ModifyUser,
   },
   methods: {
+    listenPage() {
+      
+    },
     clickBarLeft: function () {
       if (this.$store.state.userInfo.authorization) {
         // console.log(this.$store.state.userInfo);
@@ -147,8 +157,10 @@ export default {
 <style scoped>
 #home {
   height: 100vh;
-  width: 100vw;
+  width: 56.25vh;
   text-align: center;
+  min-width: 320px;
+  min-height: 650px;
 }
 .ToolBar {
   position: relative;
@@ -165,8 +177,9 @@ export default {
   left: 0.2rem;
   border-radius: 50%;
   background-repeat: no-repeat;
-  background-size: 100%, 100%;
+  background-size: cover;
   background-position: center;
+  border: 1px solid;
 }
 .ToolBar .ToolBarRight {
   display: inline-block;

@@ -137,7 +137,7 @@ export default {
 }
 .UserListName {
   float: left;
-  width: calc(100vw - 0.83rem);
+  width: calc(56.25vh - 0.83rem);
   text-align: left;
   height: 0.64rem;
   padding-left: 0.12rem;

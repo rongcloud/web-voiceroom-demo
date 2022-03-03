@@ -37,7 +37,6 @@
       <el-form-item class="btns">
         <el-button
           type="primary"
-          :disabled="buttonSubmit"
           @click="login"
           class="verificationCodeInput"
           >登录</el-button
@@ -94,7 +93,7 @@ export default {
         count: "", //倒计时时间
         platform: "web",
       },
-      checked: false,
+      checked: true,
       buttonSubmit: true,
       // 验证规则
       loginFormRules: {
@@ -148,6 +147,12 @@ export default {
     // 开始登录
     login() {
       if (this.checked) {
+         const regMobile =
+        /^(0|86|17951)?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;
+      // 如果未输入手机号，结束执行
+      if (!regMobile.test(this.loginForm.phone)||this.loginForm.verificationCode.length!=6) {
+        return;
+      }
         Request.userLand({
           mobile: this.loginForm.phone,
           verifyCode: this.loginForm.verificationCode,
@@ -216,6 +221,8 @@ export default {
   font-size: 0.14rem;
   position: relative;
   text-align: center;
+  min-width: 320px;
+  min-height: 650px;
 }
 
 .loginImg {

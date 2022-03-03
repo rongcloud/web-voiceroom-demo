@@ -86,7 +86,7 @@ export default {
 
 .titleSpace {
   display: inline-block;
-  width: 100vw;
+  width: 56.25vh;
   height: 0.65rem;
   line-height: 0.8rem;
   text-align: center;

@@ -22,7 +22,6 @@ const store = new Vuex.Store({
             userName: ''
         },
         itemList: [],
-
         roomTitle: '',
         roomPrivate: {},
         muteMicrophone: false,

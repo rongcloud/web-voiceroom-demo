@@ -1,3 +1,7 @@
+.landing{
+    position: relative;
+}
+
 .creat-room {
     position: absolute;
     top: 5.79rem;

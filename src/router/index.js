@@ -7,11 +7,10 @@ import House from "../pages/house";
 import RoomOver from "../components/roomOver";
 import VueRouter from 'vue-router'
 const router = new VueRouter({
-  mode: 'history',
   // eslint-disable-next-line no-undef
   base: __dirname,
   routes: [
-    { path: '/', redirect: '/home' },
+    { path: '/', redirect: '/login' },
     { path: '/live', name: 'liveRoom', component: liveRoom },
     { path: '/home', name: 'home', component: Home },
     { path: '/room', name: 'room', component: Room },

@@ -144,7 +144,7 @@ export default {
       isSendAll: false,
       defaultAvatarUrl:
         "https://cdn.ronghub.com/demo/default/rce_default_avatar.png",
-      defaultAddress: "/api/file/show?path=",
+      defaultAddress: "",
     };
   },
   props: {
@@ -171,7 +171,9 @@ export default {
       this.$data.giftPages[i] = giftData.slice(i * 8, i * 8 + 8);
     }
   },
-  mounted() {},
+  mounted() {
+    this.defaultAddress = this.$store.state.defaultAddress
+  },
   methods: {
     showGift: function (item) {
       console.log(this.$store.state.micData);
@@ -325,7 +327,7 @@ export default {
 </script>
 <style scoped>
 .sendTo {
-  width: 100vw;
+  width: 56.25vh;
   height: 50px;
   line-height: 50px;
   font-size: 14px;
@@ -375,13 +377,13 @@ export default {
   position: fixed;
   top: 0px;
   z-index: 20000;
-  width: 100vw;
+  width: 56.25vh;
   height: 100vh;
 }
 .shadow {
   position: absolute;
   top: 0px;
-  width: 100vw;
+  width: 56.25vh;
   height: calc(100vh - 350px);
   background: rgb(0, 0, 0, 0.5);
 }
@@ -389,13 +391,13 @@ export default {
   position: absolute;
   bottom: 0px;
   height: 350px;
-  width: 100vw;
+  width: 56.25vh;
   background: linear-gradient(90deg, #d5408a -186.8%, #1a1d3d 69.32%);
   z-index: 10000;
 }
 .mainContainer {
   position: absolute;
-  width: 100vw;
+  width: 56.25vh;
   top: 50px;
   height: 250px;
   overflow: hidden;
@@ -403,7 +405,7 @@ export default {
 .giftPages {
   position: absolute;
   font-size: 12px;
-  width: 100vw;
+  width: 56.25vh;
 }
 .giftItems {
   position: relative;
@@ -428,8 +430,8 @@ export default {
 .pageContorl {
   position: absolute;
   text-align: center;
-  width: 90vw;
-  padding-left: 45vw;
+  width: 90%;
+  padding-left: 45%;
   bottom: 40px;
 }
 .pageButton {

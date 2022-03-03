@@ -78,7 +78,7 @@ export default {
         })
         .then((res) => {
           console.log(res.data);
-          if (res.data.code == 10000 && "data" in res.data) {
+          if (res.data.code == 10000 && "data" in res.data && Object.prototype.toString.call(res.data.data).indexOf('Array') != -1) {
             this.num = res.data.data.length;
             this.dynamicTags = [...res.data.data];
           }
@@ -171,7 +171,7 @@ export default {
 }
 
 .ShieldingWords-body {
-  width: 100vw;
+  width: 56.25vh;
   height: 0.58rem;
   text-align: left;
   border-bottom: 1px solid saddlebrown;

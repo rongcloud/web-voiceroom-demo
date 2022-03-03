@@ -173,10 +173,20 @@ export default {
   color: #fff;
 }
 
+.ConnetWheat-tabs {
+  overflow: hidden;
+  width: calc(56.25vh - 0.15rem);
+}
+
 .ConnetWheat-drawer .el-tabs__content {
   height: 3.84rem;
   overflow: hidden;
   overflow-y: scroll;
+   width: 56.25vh;
+}
+
+.ConnetWheat-drawer .tabs-apply {
+  width: 56.25vh;
 }
 
 .apply-list {

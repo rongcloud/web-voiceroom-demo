@@ -19,10 +19,10 @@ export default {
 .promptBox {
   position: absolute;
   z-index: 10000;
-  width: 100vw;
+  width: 56.25vh;
   height: 100vh;
   top: 0px;
-  left: 0px;
+  left: calc(50vw - 28.125vh) !important;
   opacity: 1;
   font-size: 0.14rem;
   text-align: center;
