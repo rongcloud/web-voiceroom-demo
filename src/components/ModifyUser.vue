@@ -15,7 +15,7 @@
       :action="this.$store.state.uploadAddress"
       :headers="{
         authorization: this.$store.state.userInfo.authorization,
-         BusinessToken: btoken,
+        BusinessToken: btoken,
       }"
       :on-success="handlePopupSuccess"
       :before-upload="beforePopupUpload"
@@ -50,7 +50,8 @@
 </template>
 <script>
 import Request from "../request/index.js";
-import { btoken } from "../request/BusinessToken.js";
+import { btoken } from "../request/BusinessToken";
+
 export default {
   data() {
     return {
@@ -68,7 +69,6 @@ export default {
       this.portrait = this.$store.state.userInfo.portrait
         ? this.$store.state.defaultAddress + this.$store.state.userInfo.portrait
         : this.$store.state.defaultAvatarUrl;
-      console.log(this);
       this.dialogFormVisible = true;
     },
     //关闭个人信息编辑
@@ -79,7 +79,7 @@ export default {
     //点击
     updateValue: function () {
       if (!this.value) {
-        alert("融云 RTC:用户名不能为空");
+        this.$message.error("融云 RTC:用户名不能为空");
         return;
       }
       Request.userUpdate({
@@ -87,7 +87,6 @@ export default {
         portrait: this.portraitUrl || this.$store.state.userInfo.portrait,
       })
         .then((response) => {
-          //   console.log(response);
           if (response.data.code == 10000) {
             const obj = {
               portrait: response.data.data.portrait,
@@ -118,7 +117,7 @@ export default {
       this.$store.dispatch("updateUserInfo", obj);
       this.dialogFormVisible = false;
       // this.$forceUpdate();
-      this.$router.push("/login");
+      this.$router.push("/home");
       this.$router.go(0);
     },
     //focus动作
@@ -200,6 +199,7 @@ export default {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 50%;
+  border: 1px solid;
 }
 
 .dialog-footer {
@@ -235,6 +235,5 @@ export default {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  border: 1px solid;
 }
 </style>

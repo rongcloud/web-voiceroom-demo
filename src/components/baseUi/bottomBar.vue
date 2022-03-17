@@ -44,7 +44,7 @@
         height="36px"
       />
     </div>
-    <div class="btn" @click="btnNews" v-if="!onInput">
+    <div class="btn" v-if="!onInput" @click="setMsg">
       <img
         src="../../assets/live/icon-bottom-msg.png"
         width="36px"
@@ -154,15 +154,16 @@ export default {
         this.$emit("ApplyWeat");
       }
     },
-    //弹射礼物
-    giftShow: function () {
-      let num = Math.floor(Math.random() * 10 + 1);
-      console.log(num);
-    },
-    btnNews: function () {
+    //私信消息
+    setMsg: function () {
       this.$store.dispatch("showToast", {
         value: "功能待开放",
       });
+    },
+    //弹射礼物
+    giftShow: function () {
+      // let num = Math.floor(Math.random() * 10 + 1);
+      // console.log(num);
     },
   },
 };
@@ -172,7 +173,8 @@ export default {
   position: absolute;
   bottom: 0px;
   height: 52px;
-  width: 56.25vh;
+  width: 375px;
+  min-width: none;
 }
 .input {
   position: absolute;
@@ -197,6 +199,7 @@ export default {
 .inputing {
   background: #fff !important;
   width: 33.75vh;
+  max-width: 280px;
   left: 0px;
   border-radius: 4px;
 }

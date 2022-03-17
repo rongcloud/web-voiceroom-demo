@@ -22,7 +22,9 @@
             }}</span>
             <span class="top-left-online">在线</span>
             <span class="top-left-online-num">{{
-              this.$store.state.roomUserList.length
+              this.$store.state.roomUserList
+                ? this.$store.state.roomUserList.length
+                : 0
             }}</span>
           </div>
         </div>
@@ -276,6 +278,7 @@ export default {
       } else {
         title = this.$store.state.roomTitle;
       }
+      // console.log(title);
       if (title) {
         if (title.length > 10) {
           return title.substring(0, 10) + "...";
@@ -307,7 +310,7 @@ export default {
 
     //点击用户列表
     onClickUserList: function (item) {
-      if (!item["portrait"]) {
+      if (!item["portrait"] && "length" in this.$store.state.roomUserList) {
         for (
           let index = 0;
           index < this.$store.state.roomUserList.length;
@@ -392,6 +395,7 @@ export default {
 
     //点击右上角
     clickTopRight: async function () {
+      // console.log(this.creatuser);
       if (this.creatuser) {
         this.$refs.RoomBack.RoomBackOpen(BackList);
         this.topFilter = 5;
@@ -424,6 +428,7 @@ export default {
 
     //房主设置状态控制
     ConnectOperation: function () {
+      // console.log(this.$RCVoiceRoomLib.roomInfo);
       const RoomFitList = [...RoomFitItemList];
       if (this.$store.state.roomPrivate.isPrivate == 1) {
         RoomFitList[0] = {
@@ -491,7 +496,10 @@ export default {
       this.houserMap = {};
       let roomUserListMap = {};
       this.itemList = [];
-      if (this.$store.state.roomUserList.length == 0) {
+      if (
+        !this.$store.state.roomUserList ||
+        this.$store.state.roomUserList.length == 0
+      ) {
         return;
       }
 
@@ -513,7 +521,6 @@ export default {
       // }
 
       if (
-        this.$RCVoiceRoomLib.seatInfoList[0]["userId"] &&
         this.$RCVoiceRoomLib.seatInfoList[0]["extra"] &&
         JSON.parse(this.$RCVoiceRoomLib.seatInfoList[0]["extra"])[
           "disableRecording"
@@ -693,9 +700,7 @@ export default {
         }
       } else {
         await this.$RCVoiceRoomLib.enterSeat(0);
-        setTimeout(() => {
-          this.SetSeatList(this.$store.state.GiftAndManageList);
-        }, 50);
+        this.SetSeatList(this.$store.state.GiftAndManageList);
       }
     },
 
@@ -708,6 +713,7 @@ export default {
     //管理员控制(房主)
     SeatAdminChange: async function () {
       const Manage = await this.getManageList();
+      // console.log(Manage);
       this.updateAdminAndGift(Manage);
     },
 
@@ -883,46 +889,43 @@ export default {
 
     //接入事件
     msgOut: function (msg) {
+      // console.log(msg);
       if (msg.replace(/\s*/g, "").length == 0) {
         this.$store.dispatch("showToast", {
           value: "消息不能为空",
         });
         return;
       }
-      //本地消息
-      request
-        .getsensitiveList({
-          roomId: this.$RCVoiceRoomLib._roomidcli,
-        })
-        .then((res) => {
-          let send = true;
-          if (res.data.code == 10000 && "data" in res.data && Object.prototype.toString.call(res.data.data).indexOf('Array') != -1) {
-            for (let index = 0; index < res.data.data.length; index++) {
-              if (msg.indexOf(res.data.data[index]["name"]) != -1) {
-                send = false;
-                break;
-              }
-            }
-          }
-          let txtMsg = {
-            userName: this.$store.state.userInfo.userName, // 文本内容
-            userId: this.$store.state.userInfo.userId,
-            content: msg,
-          };
-          this.$RCVoiceRoomLib.emit("onMessageReceived", {
-            //发本地
-            //模拟本地消息发送
-            messageType: "RC:Chatroom:Barrage",
-            content: txtMsg,
+      let send = true;
+      for (
+        let index = 0;
+        index < this.$store.state.sensitiveList.length;
+        index++
+      ) {
+        if (msg.indexOf(this.$store.state.sensitiveList[index]["name"]) != -1) {
+          send = false;
+          break;
+        }
+      }
+      let txtMsg = {
+        userName: this.$store.state.userInfo.userName, // 文本内容
+        userId: this.$store.state.userInfo.userId,
+        content: msg,
+      };
+      this.$RCVoiceRoomLib.emit("MessageReceived", {
+        //发本地
+        //模拟本地消息发送
+        messageType: "RC:Chatroom:Barrage",
+        content: txtMsg,
+      });
+      if (send) {
+        // console.log(txtMsg);
+        this.$RCVoiceRoomLib.im
+          .messageUpdate("RC:Chatroom:Barrage", txtMsg)
+          .then((res) => {
+            console.log(res);
           });
-          if (send) {
-            // console.log(txtMsg);
-            this.$RCVoiceRoomLib.im.messageUpdate(
-              "RC:Chatroom:Barrage",
-              txtMsg
-            );
-          }
-        });
+      }
     },
 
     //打开gift
@@ -955,6 +958,7 @@ export default {
 
     //请求排麦与否
     ApplyWeat: async function () {
+      // console.log("this.$RCVoiceRoomLib.roomInfo", this.$RCVoiceRoomLib);
       if (this.$RCVoiceRoomLib.roomInfo.isFreeEnterSeat) {
         try {
           const findSeat = await this.$RCVoiceRoomLib.findSeat();
@@ -971,6 +975,7 @@ export default {
           });
           console.log(error);
         }
+
         return;
       }
       if (this.$store.state.HasApply) {
@@ -1008,6 +1013,7 @@ export default {
             this.$nextTick(() => {
               this.$store.dispatch("getChatroom", this.$refs.chatroom);
               this.roomId = this.$RCVoiceRoomLib._roomidcli;
+              // console.log(this.$RCVoiceRoomLib);
               if (
                 this.$RCVoiceRoomLib.roomInfo &&
                 this.$RCVoiceRoomLib.roomInfo.seatCount
@@ -1057,7 +1063,9 @@ export default {
           roomId: this.$RCVoiceRoomLib._roomidcli,
         })
         .then(async (res) => {
+          // console.log(res);
           this.$store.dispatch("getRoomUserList", res.data.data);
+          console.log(createUser);
           this.getGiftAndMan(true);
         });
     },
@@ -1094,9 +1102,22 @@ export default {
               item
             ) {
               await this.$RCVoiceRoomLib.enterSeat(0);
-              setTimeout(() => {
-                this.SetSeatList(Obj);
-              }, 50);
+              console.log(
+                "isDisableAudioRecording",
+                this.$RCVoiceRoomLib.isDisableAudioRecording()
+              );
+              if (
+                "extra" in this.$RCVoiceRoomLib.seatInfoList[0] &&
+                JSON.parse(this.$RCVoiceRoomLib.seatInfoList[0]["extra"])[
+                  "disableRecording"
+                ]
+              ) {
+                this.$RCVoiceRoomLib.disableAudioRecording(true);
+              }
+
+              // setTimeout(() => {
+              //   this.SetSeatList(Obj);
+              // }, 50);
             }
           });
         })
@@ -1128,13 +1149,16 @@ export default {
   },
   watch: {
     listenseatInfoList: function () {
-      console.log("麦位发生变化啦",this.$RCVoiceRoomLib.seatInfoList);
-      if (this.$store.state.roomUserList.length) {
+      console.log("麦位发生变化:", this.$RCVoiceRoomLib.seatInfoList);
+      if (
+        this.$store.state.roomUserList &&
+        this.$store.state.roomUserList.length
+      ) {
         this.SetSeatList(this.$store.state.GiftAndManageList);
       }
 
       if (
-        this.$RCVoiceRoomLib.seatInfoList[0]["userId"] &&
+        this.$RCVoiceRoomLib.seatInfoList[0] &&
         this.$RCVoiceRoomLib.seatInfoList[0]["extra"] &&
         JSON.parse(this.$RCVoiceRoomLib.seatInfoList[0]["extra"])[
           "disableRecording"
@@ -1206,6 +1230,7 @@ export default {
   },
   mounted() {
     this.getRoominformation();
+    console.log(navigator.userAgent);
     if (
       navigator.userAgent.indexOf("Macintosh") > -1 &&
       navigator.userAgent.indexOf("Safari") > -1 &&
@@ -1222,15 +1247,14 @@ export default {
           this.$RCVoiceRoomLib.enableSpeaker();
         })
         .catch(() => {
-          console.log("取消");
+          // console.log("取消");
         });
     }
-
-    window.addEventListener('load', () =>{
+    window.addEventListener("load", () => {
       if (this.$route.name != "login") {
         this.$router.replace("/login");
       }
-    })
+    });
   },
 };
 </script>

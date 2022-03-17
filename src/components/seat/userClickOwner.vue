@@ -90,13 +90,14 @@ export default {
     },
     muteSeat: function () {
       let b;
-      if (this.userInfo && "extra" in this.userInfo) {
+      if ("extra" in this.userInfo) {
         b = !JSON.parse(this.userInfo["extra"])["disableRecording"];
       } else {
         b = true;
       }
+
       this.$RCVoiceRoomLib.disableAudioRecording(b);
-      this.$RCVoiceRoomLib.updateSeatInfo(
+      this.$RCVoiceRoomLib.updateSeatInfoExtra(
         0,
         JSON.stringify({ disableRecording: b })
       );

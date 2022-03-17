@@ -29,10 +29,10 @@ export default {
 
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+      // console.log(tab, event);
     },
     click: function () {
-      console.log(this.keepMove);
+      // console.log(this.keepMove);
       if (this.keepMove) {
         this.circlemove = "move";
         this.keepMove = false;
@@ -50,10 +50,10 @@ export default {
     },
   },
   created() {
-    console.log(this.$RCVoiceRoomLib);
+    // console.log(this.$RCVoiceRoomLib);
   },
   mounted() {
-    console.log(this.$RCVoiceRoomLib);
+    // console.log(this.$RCVoiceRoomLib);
   },
 };
 </script>

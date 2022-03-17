@@ -42,29 +42,35 @@ export default {
       let seatcountChange = null;
       switch (item.value) {
         case "关闭房间":
-          console.log(this.$RCVoiceRoomLib);
-          await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
-          setTimeout(() => {
-            request
-              .deleteRoom({
-                roomId: this.$RCVoiceRoomLib._roomidcli,
-              })
-              .then((res) => {
-                console.log("删除房间；", res);
-                this.$router.go(-1);
-              })
-              .catch((err) => {
-                console.log(err);
+          try {
+            await this.$RCVoiceRoomLib
+              .leaveRoom(this.$RCVoiceRoomLib._roomidcli)
+              .then(async () => {
+                request
+                  .deleteRoom({
+                    roomId: this.$RCVoiceRoomLib._roomidcli,
+                  })
+                  .then(() => {
+                    this.$router.go(-1);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               });
-          }, 1000);
-
+          } catch (error) {
+            this.$store.dispatch("showToast", {
+              value: "关闭房间失败",
+            });
+            console.log(error);
+          }
           break;
         case "离开房间":
           try {
-            await this.$RCVoiceRoomLib.leaveRoom(
-              this.$RCVoiceRoomLib._roomidcli
-            );
-            this.$router.go(-1);
+            await this.$RCVoiceRoomLib
+              .leaveRoom(this.$RCVoiceRoomLib._roomidcli)
+              .then(() => {
+                this.$router.go(-1);
+              });
           } catch (error) {
             this.$store.dispatch("showToast", {
               value: "离开房间失败",
@@ -90,7 +96,6 @@ export default {
               roomId: this.$RCVoiceRoomLib._roomidcli,
             })
             .then((res) => {
-              console.log(res);
               if (res.data.code == 10000) {
                 this.$store.dispatch("showToast", {
                   value: "取消成功",
@@ -151,20 +156,25 @@ export default {
         case "全麦锁麦":
           try {
             this.$emit("closeRoomFit");
-            this.$RCVoiceRoomLib.setRoomInfo({
-              ...this.$RCVoiceRoomLib.roomInfo,
-              isMuteAll: true,
-            });
+            this.$RCVoiceRoomLib
+              .setRoomInfo({
+                ...this.$RCVoiceRoomLib.roomInfo,
+                isMuteAll: true,
+              })
+              .then(() => {
+                // console.log("setRoomInfo", this.$RCVoiceRoomLib);
+              });
             setTimeout(() => {
               this.$store.dispatch("getSeatInfoList");
               this.$store.dispatch("showToast", {
-                value: "融云 RTC：全部麦位已静音",
+                value: "融云 RTC:全部麦位已静音",
               });
             }, 50);
           } catch (error) {
             this.$store.dispatch("showToast", {
               value: "全麦锁麦失败",
             });
+
             console.log(error);
           }
 
@@ -179,7 +189,7 @@ export default {
             setTimeout(() => {
               this.$store.dispatch("getSeatInfoList");
               this.$store.dispatch("showToast", {
-                value: "融云 RTC：已解锁全麦",
+                value: "融云 RTC:已解锁全麦",
               });
             }, 50);
           } catch (error) {
@@ -233,16 +243,14 @@ export default {
 
           break;
         case "静音":
-          console.log("静音");
           await this.$RCVoiceRoomLib.muteAllRemoteStreams(true);
           this.$store.dispatch("getMicrophone", true);
           this.$store.dispatch("showToast", {
-            value: "融云 RTC：扬声器已静音",
+            value: "融云 RTC:扬声器已静音",
           });
           this.$emit("closeRoomFit");
           break;
         case "取消静音":
-          console.log("取消静音");
           await this.$RCVoiceRoomLib.muteAllRemoteStreams(false);
           this.$store.dispatch("getMicrophone", false);
           this.$store.dispatch("showToast", {
@@ -267,7 +275,7 @@ export default {
                 seatcountChange
               );
 
-              this.$RCVoiceRoomLib.emit("onMessageReceived", {
+              this.$RCVoiceRoomLib.emit("MessageReceived", {
                 //发本地
                 //模拟本地消息发送
                 messageType: "RC:Chatroom:Seats",
@@ -289,6 +297,7 @@ export default {
               ...this.$RCVoiceRoomLib.roomInfo,
               seatCount: 9,
             });
+
             setTimeout(() => {
               this.$store.dispatch("getSeatInfoList");
               seatcountChange = {
@@ -299,7 +308,7 @@ export default {
                 seatcountChange
               );
 
-              this.$RCVoiceRoomLib.emit("onMessageReceived", {
+              this.$RCVoiceRoomLib.emit("MessageReceived", {
                 //发本地
                 //模拟本地消息发送
                 messageType: "RC:Chatroom:Seats",
@@ -315,7 +324,6 @@ export default {
 
           break;
         case "屏蔽词":
-          console.log("屏蔽词");
           this.$emit("closeRoomFit");
           this.$emit("openShieldingWords");
           break;
@@ -373,6 +381,7 @@ export default {
         case "取消禁麦":
           try {
             await this.$RCVoiceRoomLib.muteSeat(userInfo.index, false);
+
             setTimeout(() => {
               this.$store.dispatch("getSeatInfoList");
             }, 200);
@@ -387,7 +396,14 @@ export default {
           break;
         case "座位禁麦":
           try {
-            await this.$RCVoiceRoomLib.muteSeat(userInfo.index, true);
+            await this.$RCVoiceRoomLib
+              .muteSeat(userInfo.index, true)
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
             setTimeout(() => {
               this.$store.dispatch("getSeatInfoList");
             }, 200);
@@ -402,7 +418,7 @@ export default {
           break;
         case "踢出房间":
           await this.$RCVoiceRoomLib.kickUserFromRoom(userInfo.userId);
-          console.log(userInfo);
+          // console.log(userInfo);
           txtMsgKickOut = {
             targetName: userInfo.userName,
             targetId: userInfo.userId,
@@ -414,7 +430,7 @@ export default {
             txtMsgKickOut
           );
 
-          this.$RCVoiceRoomLib.emit("onMessageReceived", {
+          this.$RCVoiceRoomLib.emit("MessageReceived", {
             //发本地
             //模拟本地消息发送
             messageType: "RC:Chatroom:KickOut",
@@ -427,7 +443,7 @@ export default {
       }
     },
     clickYes: function (value) {
-      console.log("roomKey", value);
+      // console.log("roomKey", value);
       request
         .setRoomPrivate({
           isPrivate: 1,
@@ -435,7 +451,7 @@ export default {
           roomId: this.$RCVoiceRoomLib._roomidcli,
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           if (res.data.code == 10000) {
             this.$store.dispatch("showToast", {
               value: "设置成功",
@@ -448,7 +464,7 @@ export default {
         });
     },
     clickTitleYes: function (value) {
-      console.log("Title", value);
+      // console.log("Title", value);
       request
         .setRoomTitle({
           name: value,
@@ -476,11 +492,11 @@ export default {
       });
       this.$RCVoiceRoomLib.roomInfo.extra = value;
       let txt = {
-        content: "房间公告已更新！",
+        content: "房间公告已更新!",
       };
       this.$RCVoiceRoomLib.im.messageUpdate("RC:TxtMsg", txt);
 
-      this.$RCVoiceRoomLib.emit("onMessageReceived", {
+      this.$RCVoiceRoomLib.emit("MessageReceived", {
         //发本地
         //模拟本地消息发送
         messageType: "RC:TxtMsg",

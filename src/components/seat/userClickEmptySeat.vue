@@ -87,10 +87,8 @@ export default {
   },
   methods: {
     UserClickEmptySeatOpen: function (item) {
-      console.log(item);
       this.userInfo = item.item;
       this.userInfoFunKeys = item.value;
-      console.log(this.userInfoFunKeys);
       this.UserClickEmptySeat = true;
     },
     closeUserClickSeizeSeat: function () {
@@ -101,7 +99,6 @@ export default {
       this.userInfoFunKeys = [];
     },
     clickInvitation: function () {
-      console.log("邀请用户上麦了");
       this.$emit("clickInvitation");
       this.UserClickEmptySeat = false;
     },

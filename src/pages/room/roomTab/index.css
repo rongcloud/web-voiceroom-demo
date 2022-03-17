@@ -1,5 +1,6 @@
 .roomTab {
     width: 100%;
+    min-width: none;
     height: 0.96rem;
 }
 

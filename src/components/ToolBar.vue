@@ -37,9 +37,9 @@ export default {
     };
   },
   watch: {
-    toolbarData: function (newVal) {
-      console.log(newVal);
-    },
+    // toolbarData: function (newVal) {
+    //   console.log(newVal);
+    // },
   },
   methods: {
     clickBarLeft: function () {
@@ -86,7 +86,8 @@ export default {
 
 .titleSpace {
   display: inline-block;
-  width: 56.25vh;
+  width: 375px;
+  min-width: none;
   height: 0.65rem;
   line-height: 0.8rem;
   text-align: center;

@@ -77,7 +77,6 @@ export default {
   watch: {},
   methods: {
     UserInformationOpen: function (item) {
-      console.log(item);
       this.userInfo = item;
       this.drawer = true;
     },

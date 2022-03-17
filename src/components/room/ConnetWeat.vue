@@ -101,7 +101,7 @@ export default {
           console.log("err:", err);
         });
 
-      console.log(arr);
+      // console.log(arr);
       this.drawer = true;
     },
     closeConnetWheat: function () {
@@ -175,23 +175,25 @@ export default {
 
 .ConnetWheat-tabs {
   overflow: hidden;
-  width: calc(56.25vh - 0.15rem);
+  width: calc(375px - 0.15rem);
 }
 
 .ConnetWheat-drawer .el-tabs__content {
   height: 3.84rem;
   overflow: hidden;
   overflow-y: scroll;
-   width: 56.25vh;
+  width: 375px;
+  min-width: none;
 }
 
 .ConnetWheat-drawer .tabs-apply {
-  width: 56.25vh;
+  width: 375px;
+  min-width: none;
 }
 
 .apply-list {
   width: 100%;
-  height: 0.64rem;
+  min-width: none;
 }
 
 .invitation-list {

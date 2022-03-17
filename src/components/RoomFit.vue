@@ -59,7 +59,6 @@ export default {
       this.$refs.ChangeBackGround.openChangeBack();
     },
     openShieldingWords: function () {
-      console.log(123);
       this.$refs.ShieldingWords.openShieldingWords();
     },
   },

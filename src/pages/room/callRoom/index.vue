@@ -80,9 +80,6 @@ export default {
           if (page == 1) {
             this.$store.dispatch("changesRoomsList", response.data.data.rooms);
           } else {
-            console.log(
-              this.$store.state.roomList.concat(response.data.data.rooms)
-            );
             this.$store.dispatch(
               "changesRoomsList",
               this.$store.state.roomList.concat(response.data.data.rooms)
@@ -137,7 +134,7 @@ export default {
         click: true,
       });
       this.myscroll.on("pullingDown", () => {
-        console.log("下拉了");
+        // console.log("下拉了");
         this.getRoomList(1);
         this.page = 1;
         setTimeout(() => {
@@ -167,7 +164,7 @@ export default {
     },
     // 上拉加载
     inffor: async function (done) {
-      console.log("上拉了");
+      // console.log("上拉了");
       if (this.$store.state.roomList.length < 10) {
         done(2);
       } else {

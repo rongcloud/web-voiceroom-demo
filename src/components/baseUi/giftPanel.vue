@@ -172,11 +172,10 @@ export default {
     }
   },
   mounted() {
-    this.defaultAddress = this.$store.state.defaultAddress
+    this.defaultAddress = this.$store.state.defaultAddress;
   },
   methods: {
     showGift: function (item) {
-      console.log(this.$store.state.micData);
       this.micData = item;
       this.currentGift = 0;
       this.currentGiftPage = 0;
@@ -186,16 +185,12 @@ export default {
       this.isSendAll = false;
     },
     sendGift: function () {
-      console.log(this.micData.length);
-      // let giftLength = Object.keys(this.$data.giftReceiver).length;
-      // let micDataLength = this.micData.length;
-      // 8 + this.$data.currentGift;
       let numIndex = this.$data.currentGift;
       if (this.$data.currentGiftPage == 1) {
         numIndex = numIndex + 8;
       }
       if (this.isSendAll) {
-        this.$RCVoiceRoomLib.emit("onMessageReceived", {
+        this.$RCVoiceRoomLib.emit("MessageReceived", {
           //发本地
           //模拟本地消息发送
           messageType: "RC:Chatroom:GiftAll",
@@ -221,7 +216,7 @@ export default {
       }
       for (var i in this.$data.giftReceiver) {
         if (!this.isSendAll) {
-          this.$RCVoiceRoomLib.emit("onMessageReceived", {
+          this.$RCVoiceRoomLib.emit("MessageReceived", {
             //发本地
             //模拟本地消息发送
             messageType: "RC:Chatroom:Gift",
@@ -257,7 +252,7 @@ export default {
         };
         Request.sendGift(giftdata).then(async (res) => {
           //发服务端
-          console.log("发送礼物接口成功", res);
+          // console.log("发送礼物接口成功", res);
           if (res.data.code == 10000) {
             this.$emit("sendGiftSuccess");
           }
@@ -266,16 +261,16 @@ export default {
       this.$emit("hideGift");
     },
     hideGift: function () {
-      console.log("ckd");
+      // console.log("ckd");
       this.$emit("hideGift");
     },
     trunPage: function (p) {
-      console.log("传入当前页面:", p);
+      // console.log("传入当前页面:", p);
       this.$data.currentPage = p;
       this.$forceUpdate();
     },
     select: function (k) {
-      console.log(this.$data.giftReceiver);
+      // console.log(this.$data.giftReceiver);
       if (this.$data.giftReceiver[k]) {
         delete this.$data.giftReceiver[k];
       } else {
@@ -305,7 +300,7 @@ export default {
       this.$forceUpdate();
     },
     selectGift: function (num, page) {
-      console.log(num, page);
+      // console.log(num, page);
       this.$data.currentGift = num;
       this.$data.currentGiftPage = page;
     },
@@ -327,7 +322,7 @@ export default {
 </script>
 <style scoped>
 .sendTo {
-  width: 56.25vh;
+  width: 100%;
   height: 50px;
   line-height: 50px;
   font-size: 14px;
@@ -377,13 +372,14 @@ export default {
   position: fixed;
   top: 0px;
   z-index: 20000;
-  width: 56.25vh;
+  width: 375px;
   height: 100vh;
+  min-width: none;
 }
 .shadow {
   position: absolute;
   top: 0px;
-  width: 56.25vh;
+  width: 100%;
   height: calc(100vh - 350px);
   background: rgb(0, 0, 0, 0.5);
 }
@@ -391,13 +387,13 @@ export default {
   position: absolute;
   bottom: 0px;
   height: 350px;
-  width: 56.25vh;
+  width: 100%;
   background: linear-gradient(90deg, #d5408a -186.8%, #1a1d3d 69.32%);
   z-index: 10000;
 }
 .mainContainer {
   position: absolute;
-  width: 56.25vh;
+  width: 100%;
   top: 50px;
   height: 250px;
   overflow: hidden;
@@ -405,7 +401,7 @@ export default {
 .giftPages {
   position: absolute;
   font-size: 12px;
-  width: 56.25vh;
+  width: 100%;
 }
 .giftItems {
   position: relative;

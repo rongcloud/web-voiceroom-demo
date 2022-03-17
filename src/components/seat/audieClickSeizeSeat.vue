@@ -76,7 +76,6 @@ export default {
   computed: {},
   methods: {
     audienceClickSeizeSeatOpen: function (item) {
-      console.log(item);
       this.userInfo = item;
       this.audienceClickSeizeSeat = true;
     },
@@ -86,13 +85,12 @@ export default {
     },
 
     giftClick: function (userInfo) {
-      console.log("送礼物:", userInfo);
       this.audienceClickSeizeSeat = false;
       this.$emit("giftClick", userInfo);
     },
 
     letterClick: function (userInfo) {
-      console.log("发私信:", userInfo);
+      console.log("发私信功能待开放:", userInfo);
       this.$store.dispatch("showToast", {
         value: "功能待开放",
       });

@@ -139,6 +139,7 @@ export default {
       //   console.log("ckd", this);
     },
     push: function (message) {
+      // console.log(message);
       this._data.chatList.push(message);
     },
     down: function () {

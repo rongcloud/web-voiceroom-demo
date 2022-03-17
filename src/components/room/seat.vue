@@ -97,6 +97,7 @@ export default {
 
   methods: {
     seatOtherWave: function (item) {
+      // console.log(item);
       this.$emit("clickSeat", item);
     },
 

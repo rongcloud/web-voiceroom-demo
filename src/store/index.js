@@ -38,6 +38,7 @@ const store = new Vuex.Store({
         muteOwer: null,
         Chatroom: null,
         micData: [],
+        sensitiveList: [],
         //控制更新
         seatInfoList: 2,
         giftValue: 2,
@@ -149,6 +150,10 @@ const store = new Vuex.Store({
         setsetCountsChange(state, newVal) {
             state.setCounts = newVal.value
         },
+        //设置屏蔽词数据
+        setsensitiveList(state, newVal) {
+            state.sensitiveList = newVal.value
+        },
 
     },
     actions: {//需要执行多个 mutations 就需要用 action 了
@@ -257,8 +262,11 @@ const store = new Vuex.Store({
         },
         //房间座位发生改变
         getsetCountsChange({ commit }, newVal) {
-
             commit('setsetCountsChange', { value: newVal })
+        },
+        //获取屏蔽词
+        getsensitiveList({ commit }, newVal) {
+            commit('setsensitiveList', { value: newVal })
         },
 
     }

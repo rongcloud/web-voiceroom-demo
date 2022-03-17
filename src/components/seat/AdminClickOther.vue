@@ -92,10 +92,8 @@ export default {
   computed: {},
   methods: {
     AdminClickOtherOpen: function (item) {
-      console.log(item);
       this.userInfo = item.item;
       this.userInfoFunKeys = item.value;
-      console.log(this.userInfoFunKeys);
       this.AdminClickOther = true;
     },
     closeAdminClickOther: function () {
@@ -107,12 +105,12 @@ export default {
     },
 
     giftClick: function (userInfo) {
-      console.log("送礼物:", userInfo);
+      // console.log("送礼物:", userInfo);
       this.AdminClickOther = false;
       this.$emit("giftClick", userInfo);
     },
     letterClick: function (userInfo) {
-      console.log("发私信:", userInfo);
+      console.log("发私信功能待开放:", userInfo);
       this.$store.dispatch("showToast", {
         value: "功能待开放",
       });

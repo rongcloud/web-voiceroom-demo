@@ -32,7 +32,8 @@
 <script>
 import { paramCheck } from "../../utils/paramCheck";
 import Request from "../../request/index.js";
-import { btoken } from "../../request/BusinessToken.js";
+import { btoken } from "../../request/BusinessToken";
+
 export default {
   name: "createRoom",
   data: function () {
@@ -97,7 +98,7 @@ export default {
   position: relative;
   font-size: 0px;
   border-radius: 0px 0px 20px 20px;
-  width: 56.25vh;
+  width: 375px;
   height: 172px;
   background: rgba(3, 6, 47, 0.2);
   color: #fff;

@@ -28,19 +28,13 @@ export default {
     return {};
   },
   created() {},
-  mounted() {
-    this.$nextTick(() => {
-      //   console.log(this.$store.state.defaultAddress);
-      //   console.log(this.$store.state.defaultAvatarUrl);
-    });
-  },
+  mounted() {},
   methods: {
     setPopup: function (item) {
       console.log(item);
     },
     onClosed: function () {},
     userclick: async function (item) {
-      console.log(item);
       switch (item.key) {
         case "接受":
           try {
@@ -91,7 +85,8 @@ export default {
 
 .usercilumnName {
   float: left;
-  width: calc(56.25vh - 0.83rem);
+  width: calc(375px - 1rem);
+  min-width: calc(320px - 1rem);
   text-align: left;
   height: 0.64rem;
   padding-left: 0.12rem;
@@ -124,7 +119,7 @@ export default {
   text-align: center;
   line-height: 0.4rem;
   position: absolute;
-  right: 0.23rem;
+  right: 0.13rem;
   top: 0.12rem;
   border-radius: 0.2rem;
   border: 1px solid rgba(255, 255, 255, 0.2);

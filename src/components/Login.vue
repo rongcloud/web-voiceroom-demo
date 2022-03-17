@@ -35,10 +35,7 @@
         </el-input>
       </el-form-item>
       <el-form-item class="btns">
-        <el-button
-          type="primary"
-          @click="login"
-          class="verificationCodeInput"
+        <el-button type="primary" @click="login" class="verificationCodeInput"
           >登录</el-button
         >
       </el-form-item>
@@ -49,11 +46,13 @@
       和
       <a class="verificationLink" @click="clickLinksec">《隐私政策》</a>
       并新登录即注册开通融云发者账号
+      <div class="verificationEdition">融云 RTC 1.0.1</div>
     </div>
   </div>
 </template>
 <script>
 import Request from "../request/index.js";
+// import RCVoiceRoomLib from "@rongcloud/rcvoiceroomlib-v1";
 export default {
   data() {
     // 验证手机号是否合法
@@ -81,6 +80,11 @@ export default {
         this.buttonSubmit = true;
         callback(new Error("验证码错误"));
       }
+      // if (value == this.loginForm.contenttext) {
+      //   return callback();
+      // } else {
+      //   callback(new Error("验证码错误"));
+      // }
     };
     return {
       // 表单
@@ -147,12 +151,15 @@ export default {
     // 开始登录
     login() {
       if (this.checked) {
-         const regMobile =
-        /^(0|86|17951)?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;
-      // 如果未输入手机号，结束执行
-      if (!regMobile.test(this.loginForm.phone)||this.loginForm.verificationCode.length!=6) {
-        return;
-      }
+        const regMobile =
+          /^(0|86|17951)?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;
+        // 如果未输入手机号，结束执行
+        if (
+          !regMobile.test(this.loginForm.phone) ||
+          this.loginForm.verificationCode.length != 6
+        ) {
+          return;
+        }
         Request.userLand({
           mobile: this.loginForm.phone,
           verifyCode: this.loginForm.verificationCode,
@@ -221,8 +228,8 @@ export default {
   font-size: 0.14rem;
   position: relative;
   text-align: center;
-  min-width: 320px;
-  min-height: 650px;
+  min-height: 625px;
+  min-width: none;
 }
 
 .loginImg {
@@ -252,10 +259,11 @@ export default {
 }
 
 .verificationCheckbox {
-  margin-top: 1.55rem;
+  margin-top: 1.35rem;
   width: 3rem;
   display: inline-block;
   font-size: 0.11rem;
+  text-align: left;
   /* white-space: pre-line; */
 }
 .verificationCheckbox .verificationValue /deep/ .el-checkbox__inner {
@@ -265,6 +273,10 @@ export default {
 .verificationCheckbox .verificationLink {
   color: #0099ff;
 }
+.verificationCheckbox .verificationEdition {
+  text-align: center;
+}
+
 .verificationCodeInputButton /deep/ span {
   color: #0099ff;
 }

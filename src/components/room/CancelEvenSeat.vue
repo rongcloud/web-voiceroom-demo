@@ -44,13 +44,18 @@ export default {
     },
 
     cancelSeat: async function () {
-      await this.$RCVoiceRoomLib.cancelRequestSeat();
-      this.$store.dispatch("showToast", {
-        value: "已撤回连线申请",
-      });
-      setTimeout(() => {
+      try {
+        await this.$RCVoiceRoomLib.cancelRequestSeat();
+        this.$store.dispatch("showToast", {
+          value: "已撤回连线申请",
+        });
         this.$store.dispatch("userHasApply", false);
-      }, 50);
+      } catch (error) {
+        this.$store.dispatch("showToast", {
+          value: "撤回连线申请失败",
+        });
+      }
+
       this.drawer = false;
     },
     cancel: function () {

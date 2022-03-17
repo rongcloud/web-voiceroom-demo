@@ -1,7 +1,7 @@
 
 import Axios from '../utils/request'
 import store from '../store/index'
-import { btoken } from './BusinessToken'
+import { btoken } from '../request/BusinessToken'
 export default {
     sendCode: (obj) => { //用户登陆获取token
         return Axios
@@ -195,7 +195,7 @@ export default {
             })
     },
 
-    getUserCheck: () => {//获取屏蔽词列表
+    getUserCheck: () => {//是否创建过房间
         return Axios
             .put(`/mic/room/create/check`, {}, {
                 headers: {

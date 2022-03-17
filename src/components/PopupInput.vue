@@ -40,7 +40,7 @@ export default {
   methods: {
     setPopup: function (item) {
       this.dialogFormVisible = true;
-      this.title = item.title || "这是一个标题";
+      this.title = item.title || "";
       this.value = item.value || "";
       this.placeholder = item.placeholder || "这是一个placeholder";
       this.type = item.type || "string";
@@ -67,8 +67,8 @@ export default {
         }
       } else {
         this.$emit("clickTitleYes", this.value);
-        this.dialogFormVisible = false;
       }
+      this.dialogFormVisible = false;
     },
     onClose: function () {
       this.dialogFormVisible = false;

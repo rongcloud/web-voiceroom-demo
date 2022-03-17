@@ -75,7 +75,7 @@ export default {
           this.imgData[i].select = false;
         }
       }
-      console.log(this.imgData);
+      // console.log(this.imgData);
     },
     closeChangeBack: function () {
       this.ChangeBack = false;
@@ -95,14 +95,14 @@ export default {
         this.getSelectImg != "" &&
         this.getSelectImg != this.$store.state.roomInformation.backgroundUrl
       ) {
-        console.log(this.getSelectImg);
+        // console.log(this.getSelectImg);
         request
           .setRoomBackground({
             backgroundUrl: this.getSelectImg,
             roomId: this.$RCVoiceRoomLib._roomidcli,
           })
           .then((res) => {
-            console.log(res);
+            // console.log(res);
             if (res.data.code == 10000) {
               this.$store.dispatch("getroomBackground", this.getSelectImg);
               this.$store.dispatch("getRoomInformation", {

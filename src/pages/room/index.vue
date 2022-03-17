@@ -113,7 +113,7 @@ import ChoiceBox from "../../components/ChoiceBox.vue";
 import request from "../../request/index";
 import { coverPhoto } from "./coverPhoto.js";
 import { GetQueryString } from "../../utils/utils";
-import { btoken } from "../../request/BusinessToken.js";
+import { btoken } from "../../request/BusinessToken";
 
 export default {
   name: "RoomTab",
@@ -178,7 +178,6 @@ export default {
     //创建房间
     creatRoom: function () {
       request.getUserCheck().then((res) => {
-        console.log();
         if (res.data.code == 10000) {
           this.imgData = this.$store.state.imgList;
           this.imgStyle = this.$store.state.imgList[0].url || "";
@@ -225,11 +224,9 @@ export default {
 
     //上传头像图片成功之后
     handleAvatarSuccess(res, file) {
-      console.log(res, file);
-      this.updateObj.themePictureUrl = `${this.$store.state.defaultAddress}${res.data}`;
-       if (this.$store.state.defaultAddress.indexOf("api") != -1) {
-        this.updateObj.themePictureUrl = `https://rcrtc-api.rongcloud.net/file/show?path=${res.data}`;
-      }
+      // console.log(res, file);
+      // this.updateObj.themePictureUrl = `${this.$store.state.defaultAddress}${res.data}`;
+      this.updateObj.themePictureUrl = `https://rcrtc-api.rongcloud.net/file/show?path=${res.data}`;
       this.imgBackground = URL.createObjectURL(file.raw);
     },
 
@@ -320,26 +317,16 @@ export default {
         .then(async (res) => {
           switch (res.data.code) {
             case 10000:
-              try {
-                await this.$RCVoiceRoomLib.createAndJoinRoom({
-                  roomId: res.data.data.roomId,
-                  roomName: res.data.data.roomName,
-                });
-                this.drawer = false;
-                setTimeout(() => {
-                  this.$router.push("/room/house");
-                }, 500);
-              } catch (err) {
-                console.log("创建语聊房失败!");
-              }
+              await this.$RCVoiceRoomLib.createAndJoinRoom({
+                roomId: res.data.data.roomId,
+                roomName: res.data.data.roomName,
+                seatCount: 9,
+              });
+              this.drawer = false;
+              setTimeout(() => {
+                this.$router.push("/room/house");
+              }, 500);
               break;
-            // case 30016:
-            //   this.drawer = false;
-            //   this.$refs.ChoiceBox.setPopup({
-            //     value: "您已创建过房间,是否直接进入",
-            //     roomId: res.data.data.roomId,
-            //   });
-            //   break;
             default:
               this.$store.dispatch("showToast", {
                 value: res.data.msg,
@@ -373,15 +360,15 @@ export default {
         this.$store.dispatch("changesImgList", response.data.data.images);
         this.$store.dispatch("changesRoomsList", response.data.data.rooms);
       })
-      .catch((err) => {
-        // alert("请求失败", err);
+      .catch(() => {
+        console.log("请求失败");
       });
 
-      window.addEventListener('load', () =>{
-       if (this.$route.name != "login") {
-          this.$router.replace("/login");
-        }
-      })
+    window.addEventListener("load", () => {
+      if (this.$route.name != "login") {
+        this.$router.replace("/login");
+      }
+    });
   },
 };
 </script>

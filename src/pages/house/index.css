@@ -1,17 +1,21 @@
 .house {
-    width: 56.25vh;
+    width: 375px;
     height: 100vh;
+    /* min-width: none; */
+    min-height: 625px;
     position: relative;
     background-repeat: no-repeat;
-    background-size: 56.25vh 100vh;
+    background-size: cover;
     background-position: center;
+
 }
 
 .top {
     height: 0.4rem;
     width: 100%;
+    min-width: 375px;
     padding-top: 0.27rem;
-    position: relative;
+
 }
 
 .top-left {
@@ -117,7 +121,6 @@
 
 .center {
     width: 100%;
-
 }
 
 .center-top {
@@ -227,7 +230,7 @@
 
 .audience {
     width: 100%;
-    min-width: 365px;
+    min-width: none;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -235,6 +238,7 @@
 
 .audience-fa {
     width: 3.64rem;
+    min-width: 365px;
 }
 
 .audience-item {
@@ -285,7 +289,6 @@
 
 .room-talk {
     width: 100%;
-    height: 1.5rem;
     overflow: hidden;
 }
 

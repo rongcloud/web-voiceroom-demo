@@ -98,20 +98,17 @@ export default {
   created() {
     // console.log(this.$store.state.userInfo);
   },
-  mounted(){
-      window.addEventListener('load', () =>{
-       if (this.$route.name != "login") {
-          this.$router.replace("/login");
-        }
-      })
-  },
   components: {
     ModifyUser,
   },
+  mounted() {
+    window.addEventListener("load", () => {
+      if (this.$route.name != "login") {
+        this.$router.replace("/login");
+      }
+    });
+  },
   methods: {
-    listenPage() {
-      
-    },
     clickBarLeft: function () {
       if (this.$store.state.userInfo.authorization) {
         // console.log(this.$store.state.userInfo);
@@ -157,15 +154,14 @@ export default {
 <style scoped>
 #home {
   height: 100vh;
-  width: 56.25vh;
+  width: 375px;
   text-align: center;
-  min-width: 320px;
-  min-height: 650px;
 }
 .ToolBar {
   position: relative;
   height: 0.44rem;
   width: 100%;
+  min-width: none;
   margin-bottom: 0.06rem;
 }
 .ToolBar .ToolBarLeft {
@@ -200,6 +196,7 @@ export default {
 }
 .chatRoom {
   width: 100%;
+  /* min-width: none; */
   height: 1.57rem;
   background-repeat: no-repeat;
   background-size: 3.33rem 1.3rem;

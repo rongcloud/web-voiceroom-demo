@@ -13,9 +13,7 @@ export default {
     //创建房间
     creatRoom: function () {},
   },
-  created() {
-    console.log("vvvue");
-  },
+  created() {},
   mounted() {},
 };
 </script>

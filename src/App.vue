@@ -1,14 +1,8 @@
 <template>
-<div class="bg">
-    <div id="app">
-    <PromptBox />
-    <router-view></router-view>
+  <div class="bg">
+    <div id="app"><PromptBox /><router-view></router-view></div>
   </div>
-</div>
-
-</template>
-
-<script>
+</template><script>
 import PromptBox from "./components/PromptBox.vue";
 import request from "./request/index";
 
@@ -21,35 +15,33 @@ export default {
       admin_Img: require("./assets/roomicon/Manage.png"),
       // eslint-disable-next-line no-undef
       ower_Img: require("./assets/roomicon/administrators.png"),
+      refresh: true,
     };
   },
+
   components: {
     PromptBox,
   },
-  created() {
-    this.$RCVoiceRoomLib.init("pvxdm17jpw7ar");//测试
-  },
-  mounted() {
-    this.$RCVoiceRoomLib.on("SeatMute", () => {
-      // console.log(this.$RCVoiceRoomLib.seatInfoList);
-    });
 
-    this.$RCVoiceRoomLib.on("SeatUnMute", () => {
-      // console.log(this.$RCVoiceRoomLib.seatInfoList);
+  created() {
+    this.$RCVoiceRoomLib.init({
+      AppKey: "pvxdm17jpw7ar",
     });
+  },
+
+  mounted() {
+    // this.$RCVoiceRoomLib.on("SeatMute", (Mute) => {
+    //   console.log("Mute", Mute);
+    // });
 
     //座位发生变化
     this.$RCVoiceRoomLib.on("seatInfoDidUpdate", () => {
-      // console.log("seatInfoDidUpdate", info);
       this.$store.dispatch("getSeatInfoList");
     });
 
     //房间信息发声变化
-    this.$RCVoiceRoomLib.on("roomInfoDidUpdate", () => {
-      this.$store.dispatch(
-        "getroomTitle",
-        this.$RCVoiceRoomLib.roomInfo.roomName
-      );
+    this.$RCVoiceRoomLib.on("roomInfoDidUpdate", (roomInfo) => {
+      this.$store.dispatch("getroomTitle", roomInfo.roomName);
     });
 
     //被踢出房间
@@ -58,26 +50,35 @@ export default {
     });
 
     //各种公屏消息
-    this.$RCVoiceRoomLib.on("onMessageReceived", async (m) => {
-      // console.log("onMessageReceived+++++++", m);
+    this.$RCVoiceRoomLib.on("MessageReceived", async (m) => {
+      // let m = message.messages[0];
+      // console.log("MessageReceived", m);
       //适配阻止多端登陆消息监听
-      if (
-        m.messageType == "RCMic:loginDeviceMsg" &&
-        m.content.platform != "web"
-      ) {
-        this.$store.dispatch("showToast", {
-          value: "移动端登陆",
-          time: 2000,
-        });
-        if (this.$route.name == "roomHouse") {
-          await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
+      if (m.messageType == "RCMic:loginDeviceMsg") {
+        if (m.content.platform != "web") {
+          this.$store.dispatch("showToast", {
+            value: "移动端登陆",
+            time: 2000,
+          });
+
+          if (this.$route.name == "roomHouse") {
+            await this.$RCVoiceRoomLib.leaveRoom(
+              this.$RCVoiceRoomLib._roomidcli
+            );
+          }
+
+          if (this.$route.name != "home") {
+            this.$router.replace("/home");
+          }
+
+          setTimeout(
+            () => {
+              this.$router.go(0);
+            },
+
+            2000
+          );
         }
-        if (this.$route.name != "login") {
-          this.$router.replace("/login");
-        }
-        setTimeout(() => {
-          this.$router.go(0);
-        }, 2000);
       }
 
       //适配数美审核消息监听变更
@@ -88,15 +89,18 @@ export default {
             time: 3000,
           });
         }
+
         if (m.content.status == 2) {
           if (this.$route.name == "roomHouse") {
             await this.$RCVoiceRoomLib.leaveRoom(
               this.$RCVoiceRoomLib._roomidcli
             );
           }
-          if (this.$route.name != "login") {
-            this.$router.replace("/login");
+
+          if (this.$route.name != "home") {
+            this.$router.replace("/home");
           }
+
           this.$router.go(0);
         }
       }
@@ -104,13 +108,16 @@ export default {
       if (!this.$store.state.Chatroom) {
         return;
       }
+
       let user = {
         userId: m.content.userId,
         userName: m.content.userName,
         ower: false,
         admin: false,
       };
+
       let targetuser = {};
+
       if (
         m.content.userId == this.$store.state.roomInformation.createUser.userId
       ) {
@@ -130,12 +137,14 @@ export default {
           admin: false,
           ower: false,
         };
+
         if (
           targetuser.targetId ==
           this.$store.state.roomInformation.createUser.userId
         ) {
           targetuser["ower"] = true;
         }
+
         if (
           targetuser.targetId in
           this.$store.state.GiftAndManageList["ManageObj"]
@@ -143,6 +152,7 @@ export default {
           targetuser["admin"] = true;
         }
       }
+
       let imgower =
         "<span  style='width:20px;height:20px;display:inline-block;margin-bottom:-5px;background-image: url(" +
         this.ower_Img +
@@ -157,13 +167,13 @@ export default {
         : targetuser.admin
         ? imgAdmin
         : "";
-
-      if ("type" in m && m.type == 1) {
+      console.log(m);
+      if ("conversationType" in m && m.conversationType == 1) {
         return;
       }
+
       switch (m.messageType) {
-        case "RC:Chatroom:Gift":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:Gift": // eslint-disable-next-line no-case-declarations
           let giftMsg =
             userImg +
             "<span id='" +
@@ -187,8 +197,7 @@ export default {
           this.$store.state.Chatroom.push(giftMsg);
           this.$store.dispatch("giftUpdate");
           break;
-        case "RC:Chatroom:Barrage":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:Barrage": // eslint-disable-next-line no-case-declarations
           let Barrage =
             userImg +
             "<span id='" +
@@ -199,8 +208,7 @@ export default {
             m.content.content;
           this.$store.state.Chatroom.push(Barrage);
           break;
-        case "RC:Chatroom:Enter":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:Enter": // eslint-disable-next-line no-case-declarations
           let Enter =
             userImg +
             "<span id='" +
@@ -210,8 +218,7 @@ export default {
             "</span> 进来了";
           this.$store.state.Chatroom.push(Enter);
           break;
-        case "RC:Chatroom:KickOut":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:KickOut": // eslint-disable-next-line no-case-declarations
           let KickOut =
             targetImg +
             "<span id='" +
@@ -228,8 +235,7 @@ export default {
           this.$store.state.Chatroom.push(KickOut);
           // this.KickUserOut(targetuser);
           break;
-        case "RC:Chatroom:Admin":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:Admin": // eslint-disable-next-line no-case-declarations
           let text = m.content.isAdmin ? "成为管理员" : "被撤回管理员";
           // eslint-disable-next-line no-case-declarations
           let img = m.content.isAdmin ? imgAdmin : "";
@@ -245,8 +251,7 @@ export default {
           this.$store.state.Chatroom.push(Admin);
           this.$store.dispatch("AdminUpdate");
           break;
-        case "RC:Chatroom:GiftAll":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:GiftAll": // eslint-disable-next-line no-case-declarations
           let giftAllMsg =
             userImg +
             "<span id='" +
@@ -260,8 +265,7 @@ export default {
           this.$store.state.Chatroom.push(giftAllMsg);
           this.$store.dispatch("giftUpdate");
           break;
-        case "RC:Chatroom:Seats":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:Chatroom:Seats": // eslint-disable-next-line no-case-declarations
           let seatCounts =
             "<span>房间更换为 " +
             m.content.count +
@@ -269,26 +273,76 @@ export default {
           this.$store.state.Chatroom.push(seatCounts);
           this.$store.dispatch("getsetCountsChange", m.content.count + 1);
           break;
-        case "RC:TxtMsg":
-          // eslint-disable-next-line no-case-declarations
+        case "RC:TxtMsg": // eslint-disable-next-line no-case-declarations
           let TxtMsg =
             "<span style='color:rgba(106, 159, 255, 1);'>" +
             m.content.content +
             "</span>";
           this.$store.state.Chatroom.push(TxtMsg);
           break;
-        case "RC:Chatroom:Like":
-          // console.log(this.$RCVoiceRoomLib);
+        case "RC:Chatroom:Like": // console.log(this.$RCVoiceRoomLib);
           break;
         default:
           break;
       }
     });
 
-    //房间人数发生变化
-    this.$RCVoiceRoomLib.on("changeUserCount", () => {
-      // if (this.changeUserCountKey) {
-      //   this.changeUserCountKey = false;
+    //房间刷新消息
+    this.$RCVoiceRoomLib.on("RoomNotificationReceived", (item) => {
+      const { name, content } = item;
+      console.log(name, content);
+      switch (name) {
+        case "VoiceRoomBackgroundChanged":
+          this.$store.dispatch("getroomBackground", content);
+          break;
+        case "VoiceRoomAgreeManagePick":
+          if (content == this.$RCVoiceRoomLib.im.userId) {
+            this.$store.dispatch("showToast", {
+              value: "用户连线成功",
+            });
+          }
+          break;
+        case "VoiceRoomRejectManagePick":
+          if (content == this.$RCVoiceRoomLib.im.userId) {
+            this.$store.dispatch("showToast", {
+              value: "用户拒绝邀请",
+            });
+          }
+          break;
+        case "EVENT_ADD_SHIELD":
+          this.$store.dispatch("getsensitiveList", {
+            value: [
+              ...this.$store.state.sensitiveList,
+              { name: content, id: Math.random() },
+            ],
+          });
+          break;
+        case "EVENT_DELETE_SHIELD":
+          // eslint-disable-next-line no-case-declarations
+          let array = JSON.parse(
+            JSON.stringify(this.$store.state.sensitiveList)
+          );
+          // eslint-disable-next-line no-case-declarations
+          let index = -1;
+          for (let i = 0; i < array.length; i++) {
+            if (array[i]["name"] == content) {
+              index = i;
+            }
+          }
+          if (index > -1) {
+            array.splice(index, 1);
+          }
+          this.$store.dispatch("getsensitiveList", [...array]);
+          break;
+        default:
+          break;
+      }
+    });
+
+    //房间人数发生变化(有人进来)
+    this.$RCVoiceRoomLib.on("AudienceEnter", (item) => {
+      console.log("房间人数发生变化(有人进来)", item);
+
       request
         .roomuser({
           roomId: this.$RCVoiceRoomLib._roomidcli,
@@ -296,15 +350,25 @@ export default {
         .then((res) => {
           this.$store.dispatch("getRoomUserList", res.data.data);
         });
-      // setTimeout(() => {
-      //   this.changeUserCountKey = true;
-      // }, 1000);
-      // }
+    });
+
+    //房间人数发生变化(有人离开)
+    this.$RCVoiceRoomLib.on("AudienceExit", (item) => {
+      console.log("房间人数发生变化(有人离开)", item);
+
+      request
+        .roomuser({
+          roomId: this.$RCVoiceRoomLib._roomidcli,
+        })
+        .then((res) => {
+          this.$store.dispatch("getRoomUserList", res.data.data);
+        });
     });
 
     //申请上麦人员发生变化
     this.$RCVoiceRoomLib.on("RequestSeatListChanged", async () => {
       const arr = await this.$RCVoiceRoomLib.getRequestSeatUserIds();
+      // console.log("getRequestSeatUserIds", arr);
       this.$store.dispatch("getRequestSeatUserIds", arr);
       if (arr.indexOf(this.$RCVoiceRoomLib.im.userId) != -1) {
         this.$store.dispatch("userHasApply", true);
@@ -316,15 +380,13 @@ export default {
     //申请上麦被同意
     this.$RCVoiceRoomLib.on("RequestSeatAccepted", async () => {
       const value = await this.$RCVoiceRoomLib.findSeat();
-      console.log(value);
+
       try {
-        setTimeout(async () => {
-          await this.$RCVoiceRoomLib.enterSeat(value);
-          this.$store.dispatch("getSeatInfoList");
-          this.$store.dispatch("showToast", {
-            value: "上麦成功",
-          });
-        }, 200);
+        await this.$RCVoiceRoomLib.enterSeat(value);
+        this.$store.dispatch("getSeatInfoList");
+        this.$store.dispatch("showToast", {
+          value: "上麦成功",
+        });
       } catch (error) {
         this.$store.dispatch("showToast", {
           value: "上麦失败",
@@ -340,42 +402,15 @@ export default {
       });
     });
 
-    //说话监听(web rtc 暂不支持合流的用户区分，该功能暂不支持)
-    // this.$RCVoiceRoomLib.on("speakingStatusChenge", (info) => {
-    //   // console.log("speakingStatusChenge", info);
-    //   // if (Number(info.speaking)) {
-    //   this.$store.dispatch("getSpeakingChenge", {
-    //     index: Number(info.index),
-    //     speaking: Number(info.speaking),
-    //   });
-    //   // }
-    // });
-
-    //关闭房间
-    this.$RCVoiceRoomLib.on("onVoiceRoomClosed", async () => {
-      await this.$RCVoiceRoomLib
-        .leaveRoom(this.$RCVoiceRoomLib._roomidcli)
-        .then(() => {
-          this.$store.dispatch("getSeatInfoList");
-          this.$alert("当前直播已结束", {
-            confirmButtonText: "确定",
-            center: true,
-            showClose: false,
-            customClass: "customClass-Control",
-            callback: () => {
-              this.$router.go(-1);
-            },
-          });
-        });
-    });
-
-    //更换背景
-    this.$RCVoiceRoomLib.on("onVoiceRoomBackgroundChanged", (img) => {
-      this.$store.dispatch("getroomBackground", img);
+    //rtc 断开连接(待机断线问题)
+    this.$RCVoiceRoomLib.on("RTCPeerConnectionCloseByException", async () => {
+      await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
+      this.$router.replace("/home");
+      this.$router.go(0);
     });
 
     //被邀请上麦
-    this.$RCVoiceRoomLib.on("onRCPickerUserSeatContent", (info) => {
+    this.$RCVoiceRoomLib.on("RCPickerUserSeatContent", (info) => {
       if (info.targetId == this.$RCVoiceRoomLib.im.userId) {
         if (this.$store.state.userInseat) {
           this.$store.dispatch("showToast", {
@@ -388,7 +423,9 @@ export default {
               this.$store.state.roomInformation.createUser.userId
                 ? "房主"
                 : "管理员"
-            }邀请上麦，是否同意？`,
+            }
+
+              邀请上麦，是否同意？`,
             "是否同意上麦",
             {
               confirmButtonText: "同意",
@@ -405,18 +442,19 @@ export default {
                 await this.$RCVoiceRoomLib.enterSeat(fintSeat);
                 this.$RCVoiceRoomLib.notifyVoiceRoom(
                   "VoiceRoomAgreeManagePick",
-                  {
-                    content: info.targetId,
-                    name: "VoiceRoomAgreeManagePick",
-                    totalMemberCount: 0,
-                  }
+                  info.sendUserId
                 );
-                setTimeout(() => {
-                  this.$store.dispatch("showToast", {
-                    value: "上麦成功",
-                  });
-                  this.$store.dispatch("getSeatInfoList");
-                }, 50);
+
+                setTimeout(
+                  () => {
+                    this.$store.dispatch("showToast", {
+                      value: "上麦成功",
+                    });
+                    this.$store.dispatch("getSeatInfoList");
+                  },
+
+                  50
+                );
               } catch (error) {
                 this.$store.dispatch("showToast", {
                   value: "上麦失败",
@@ -427,48 +465,33 @@ export default {
             .catch(() => {
               this.$RCVoiceRoomLib.notifyVoiceRoom(
                 "VoiceRoomRejectManagePick",
-                {
-                  content: info.targetId,
-                  name: "VoiceRoomRejectManagePick",
-                  totalMemberCount: 0,
-                }
+                info.sendUserId
               );
             });
         }
       }
     });
 
-    //收到同意邀请上麦消息
-    this.$RCVoiceRoomLib.on("onVoiceRoomAgreeManagePick", () => {
-      this.$store.dispatch("showToast", {
-        value: "用户连线成功",
-      });
-    });
-
-    //收到拒绝邀请上麦消息
-    this.$RCVoiceRoomLib.on("onVoiceRoomRejectManagePick", () => {
-      this.$store.dispatch("showToast", {
-        value: "用户拒绝邀请",
-      });
-    });
-
     //账号被顶掉
-    this.$RCVoiceRoomLib.on("onConnectioBreakOff", async () => {
+    this.$RCVoiceRoomLib.on("ConnectioBreakOff", async () => {
       if (this.$route.name == "roomHouse") {
         await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
       }
-      if (this.$route.name != "login") {
-        this.$router.replace("/login");
+
+      if (this.$route.name != "home") {
+        this.$router.replace("/home");
       }
+
       this.$router.go(0);
     });
 
     //房间被销毁
-    this.$RCVoiceRoomLib.on("onChatroomDestroyed", async () => {
+    this.$RCVoiceRoomLib.on("ChatroomDestroyed", async () => {
       await this.$RCVoiceRoomLib
         .leaveRoom(this.$RCVoiceRoomLib._roomidcli)
         .then(() => {
           this.$store.dispatch("getSeatInfoList");
+
           this.$alert("当前直播已结束", {
             confirmButtonText: "确定",
             center: true,
@@ -483,20 +506,12 @@ export default {
 
     //被抱下麦
     this.$RCVoiceRoomLib.on("KickSeatReceived", () => {
-      console.log("您已被抱下麦");
       this.$store.dispatch("showToast", {
         value: "您已被抱下麦",
       });
     });
-
-    //rtc 断开连接(待机断线问题)
-    this.$RCVoiceRoomLib.on("RTCPeerConnectionCloseByException", async () => {
-      console.log("rtc 断开连接");
-      await this.$RCVoiceRoomLib.leaveRoom(this.$RCVoiceRoomLib._roomidcli);
-      this.$router.replace("/login");
-      this.$router.go(0);
-    });
   },
+
   methods: {
     KickUserOut: async function (parm) {
       if (parm.targetId == this.$RCVoiceRoomLib.im.userId) {
@@ -513,21 +528,22 @@ export default {
     },
   },
 };
-</script>
-
-<style>
+</script><style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100%;
-  width: 56.25vh;
+  width: 375px;
   overflow: hidden;
   margin: auto;
   background: #fff;
   font-size: 16px;
+  min-width: none;
+  min-height: 625px;
 }
+
 .customClass-Control {
   width: 3rem !important;
 }
@@ -535,20 +551,24 @@ export default {
 .bg {
   background: url("./assets/webBg.png");
   height: 100vh;
+  min-height: 625px;
 }
 
 .el-drawer__wrapper {
-  width: 56.25vh !important;
-  left: calc(50vw - 28.125vh) !important;
+  width: 375px !important;
+  min-width: none;
+  left: calc(50vw - 187.5px) !important;
 }
 
 .el-dialog__wrapper {
-  width: 56.25vh !important;
-  left: calc(50vw - 28.125vh) !important;
+  width: 375px !important;
+  min-width: none;
+  left: calc(50vw - 187.5px) !important;
 }
 
 .v-modal {
-  width: 56.25vh !important;
-  left: calc(50vw - 28.125vh) !important;
+  width: 375px !important;
+  min-width: none;
+  left: calc(50vw - 187.5px) !important;
 }
 </style>

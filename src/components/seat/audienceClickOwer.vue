@@ -58,7 +58,6 @@ export default {
   watch: {},
   methods: {
     audienceClickOwerOpen: function (item) {
-      console.log(item);
       this.userInfo = item;
       this.drawer = true;
       this.mute = this.$store.state.muteMicrophone;
@@ -93,7 +92,6 @@ export default {
         });
         return;
       }
-      console.log(mute);
       if (mute) {
         this.$store.dispatch("getMicrophone", false);
         await this.$RCVoiceRoomLib.disableAudioRecording(false);

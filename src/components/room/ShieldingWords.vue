@@ -27,7 +27,7 @@
         >
         <el-tag
           :key="tag.id"
-          v-for="tag in dynamicTags"
+          v-for="tag in this.$store.state.sensitiveList"
           closable
           :disable-transitions="false"
           @close="handleClose(tag)"
@@ -57,7 +57,6 @@ export default {
       ShieldingWords: false,
       direction: "btt",
       num: 0,
-      dynamicTags: [],
       inputVisible: false,
       inputValue: "",
     };
@@ -71,16 +70,19 @@ export default {
   methods: {
     openShieldingWords: function () {
       this.ShieldingWords = true;
-      this.dynamicTags = [];
+      this.$store.dispatch("getsensitiveList", []);
       request
         .getsensitiveList({
           roomId: this.$RCVoiceRoomLib._roomidcli,
         })
         .then((res) => {
-          console.log(res.data);
-          if (res.data.code == 10000 && "data" in res.data && Object.prototype.toString.call(res.data.data).indexOf('Array') != -1) {
+          if (
+            res.data.code == 10000 &&
+            "data" in res.data &&
+            Object.prototype.toString.call(res.data.data).indexOf("Array") != -1
+          ) {
             this.num = res.data.data.length;
-            this.dynamicTags = [...res.data.data];
+            this.$store.dispatch("getsensitiveList", [...res.data.data]);
           }
         });
     },
@@ -90,15 +92,32 @@ export default {
     },
 
     handleClose(tag) {
+      console.log(tag);
       request
         .sensitiveDelet({
           id: tag.id,
         })
         .then((res) => {
-          console.log(res.data);
           if (res.data.code == 10000) {
-            this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-            this.num = this.dynamicTags.length;
+            let array = JSON.parse(
+              JSON.stringify(this.$store.state.sensitiveList)
+            );
+            let index = -1;
+            for (let i = 0; i < array.length; i++) {
+              if (array[i]["name"] == tag.name) {
+                index = i;
+              }
+            }
+            if (index > -1) {
+              array.splice(index, 1);
+            }
+            this.num = array.length;
+            // console.log(array);
+            this.$RCVoiceRoomLib.notifyVoiceRoom(
+              "EVENT_DELETE_SHIELD",
+              tag.name
+            );
+            this.$store.dispatch("getsensitiveList", [...array]);
           }
         })
         .catch((err) => {
@@ -115,7 +134,6 @@ export default {
 
     handleInputConfirm() {
       let inputValue = this.inputValue;
-      console.log();
       if (inputValue && this.num < 10) {
         request
           .sensitiveAdd({
@@ -124,10 +142,18 @@ export default {
             roomId: this.$RCVoiceRoomLib._roomidcli,
           })
           .then((res) => {
-            console.log(res.data);
             if (res.data.code == 10000) {
-              this.dynamicTags.push(res.data.data);
-              this.num = this.dynamicTags.length;
+              let arr = JSON.parse(
+                JSON.stringify(this.$store.state.sensitiveList)
+              );
+              arr.push(res.data.data);
+              // console.log(arr);
+              this.num = arr.length;
+              this.$store.dispatch("getsensitiveList", [...arr]);
+              this.$RCVoiceRoomLib.notifyVoiceRoom(
+                "EVENT_ADD_SHIELD",
+                inputValue
+              );
             }
           })
           .catch((err) => {
@@ -171,7 +197,7 @@ export default {
 }
 
 .ShieldingWords-body {
-  width: 56.25vh;
+  width: 375px;
   height: 0.58rem;
   text-align: left;
   border-bottom: 1px solid saddlebrown;
@@ -205,7 +231,6 @@ export default {
   border: none !important;
   background: rgba(255, 255, 255, 0.2) !important;
   color: rgba(255, 255, 255, 1) !important;
-  border-radius: 0.18rem !important;
 }
 .el-tag__close {
   color: rgba(255, 255, 255, 1) !important;
@@ -218,7 +243,7 @@ export default {
   border-radius: 0.18rem !important;
   width: 0.6rem;
   margin-top: 0.1rem !important;
-  font-size: 0.24rem !important;
+  /* font-size: 0.16rem !important; */
   border: none !important;
   padding: 0 !important;
   background: rgba(255, 255, 255, 0.2) !important;

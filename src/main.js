@@ -8,6 +8,9 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import md5 from 'js-md5';
 import RCVoiceRoomLib from "@rongcloud/rcvoiceroomlib-v1";
+import * as RongIMLib from "@rongcloud/imlib-next";
+import * as RongRTCLib from "@rongcloud/plugin-rtc";
+import * as Engine from "@rongcloud/engine";
 import VueScroller from 'vue-scroller'
 
 Vue.use(VueRouter)
@@ -20,7 +23,9 @@ Vue.prototype.$axios = Axios
 Vue.prototype.$md5 = md5;
 Vue.prototype.$store = store;
 Vue.prototype.$RCVoiceRoomLib = RCVoiceRoomLib;
-
+Vue.prototype.$RongIMLib = RongIMLib;
+Vue.prototype.$RongRTCLib = RongRTCLib;
+Vue.prototype.$Engine = Engine;
 
 new Vue({
   router,

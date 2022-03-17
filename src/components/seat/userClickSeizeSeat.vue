@@ -114,10 +114,8 @@ export default {
   },
   methods: {
     UserClickSeizeSeatOpen: function (item) {
-      // console.log(item);
       this.userInfo = item.item;
       this.userInfoFunKeys = item.value;
-      console.log(this.userInfoFunKeys);
       this.UserClickSeizeSeat = true;
     },
     closeUserClickSeizeSeat: function () {
@@ -128,7 +126,6 @@ export default {
       this.userInfoFunKeys = [];
     },
     SeatAdminChange: function (item) {
-      // console.log(item);
       this.UserClickSeizeSeat = false;
       request
         .setManage({
@@ -144,7 +141,7 @@ export default {
               userName: item.userName,
               isAdmin: !item.isAdmin,
             };
-            this.$RCVoiceRoomLib.emit("onMessageReceived", {
+            this.$RCVoiceRoomLib.emit("MessageReceived", {
               //发本地
               //模拟本地消息发送
               messageType: "RC:Chatroom:Admin",
@@ -164,7 +161,7 @@ export default {
       this.$emit("giftClick", userInfo);
     },
     letterClick: function (userInfo) {
-      console.log("发私信:", userInfo);
+      console.log("发私信功能待开放:", userInfo);
       this.$store.dispatch("showToast", {
         value: "功能待开放",
       });

@@ -121,12 +121,12 @@ export default {
         }
       }
 
-      this.$RCVoiceRoomLib.on("onMessageReceived", (m) => {
+      this.$RCVoiceRoomLib.on("MessageReceived", (m) => {
         console.log("收到消息", m);
         switch (m.messageType) {
           case "RC:TxtMsg": //收到文本消息打到公屏
             console.log("收到文本消息打到公屏");
-            console.log("收到的是：", m);
+            console.log("收到的是:", m);
             // eslint-disable-next-line no-case-declarations
             let txtMsg =
               "<span style='color:#7f7f7f'>" +

@@ -64,7 +64,7 @@ export default {
       return this.roomsList;
     },
     clickYes: async function (value) {
-      console.log(value);
+      // console.log(value);
       if (value == this.key) {
         try {
           this.$refs.PopuInput.onClose();

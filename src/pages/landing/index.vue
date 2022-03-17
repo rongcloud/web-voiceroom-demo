@@ -52,7 +52,7 @@ export default {
           console.log(response);
         })
         .catch((err) => {
-          alert("请求失败", err);
+          console.log("请求失败", err);
         });
     },
   },
