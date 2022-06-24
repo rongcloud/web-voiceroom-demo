@@ -8,7 +8,7 @@
     <div class="input">
       <div
         class="iconVoice"
-        v-if="!this.$store.state.creatUser && this.$store.state.roomType == 'live' "
+        v-if="!this.$store.state.creatUser"
         @mousedown="startRec"
         @mouseleave="cancelRec"
         @mouseup="endRec"
@@ -28,13 +28,7 @@
     </div>
     <div
       class="btnApply"
-      v-if="
-        !onInput &&
-        this.$store.state.creatUser &&
-        (this.$store.state.roomType == 'live'
-          ? !this.$store.state.onLink
-          : true) && !this.$store.state.picking
-      "
+      v-if="!onInput && this.$store.state.creatUser"
       @click="ApplyWeatModel"
     >
       <img
@@ -84,24 +78,9 @@
         height="36px"
       />
     </div> -->
-     <div
-      class="btn"
-      v-if="this.$store.state.picking"
-      @click="cancelInv"
-    >
-      <img
-        :src="waitUpSeat"
-        width="36px"
-        height="36px"
-      />
-    </div>
     <div
       class="btn"
-      v-if="
-        !onInput &&
-        !this.$store.state.creatUser &&
-        (this.$store.state.roomType == 'live' ? !this.$store.state.onMic : true)
-      "
+      v-if="!onInput && !this.$store.state.creatUser"
       @click="ApplyWeat"
     >
       <img
@@ -116,17 +95,13 @@
         height="36px"
       />
     </div>
-    <div
+    <!-- <div
       class="btn"
-      v-if="
-        !onInput &&
-        this.$store.state.onLink &&
-        (this.$store.state.roomType == 'live' ? true : false)
-      "
+      v-if="!onInput && this.$store.state.onLink"
       @click="quitSeat"
     >
       <img :src="optionImg" width="36px" height="36px" />
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -156,9 +131,6 @@ export default {
   created() {},
 
   mounted() {
-    // this.$nextTick(()=>{
-    //   this.resGite = this.$refs.GiftSpace
-    // })
     let that = this;
     document.getElementById("inputer").addEventListener(
       "compositionstart",
@@ -187,7 +159,6 @@ export default {
           }
         }, 50);
       }
-
       if (e.key == "Escape") {
         this.$data.onInput = false;
       }
@@ -206,21 +177,12 @@ export default {
     endRec: function () {
       console.log("name", this.$store.state.userInfo.userName);
       this.$data.recing = false;
-      if (this.$store.state.roomType == "live") {
-        Recorder.stop({
-          userId: this.$RCLiveRoomLib.im.userId,
-          userName: this.$store.state.userInfo.userName,
-          im: this.$RCLiveRoomLib.im,
-          chatroom: this.$store.state.Chatroom,
-        });
-      } else {
-        Recorder.stop({
-          userId: this.$RCVoiceRoomLib.im.userId,
-          userName: this.$store.state.userInfo.userName,
-          im: this.$RCVoiceRoomLib.im,
-          chatroom: this.$store.state.Chatroom,
-        });
-      }
+      Recorder.stop({
+        userId: this.$RCVoiceRoomLib.im.userId,
+        userName: this.$store.state.userInfo.userName,
+        im: this.$RCVoiceRoomLib.im,
+        chatroom: this.$store.state.Chatroom,
+      });
     },
     send: function () {
       this.$emit("msgOut", this.$data.msg);
@@ -253,10 +215,6 @@ export default {
       if (!this.$store.state.userInseat) {
         this.$emit("ApplyWeat");
       }
-    },
-    //取消邀请
-    cancelInv: function (){
-      this.$emit("cancelInv")
     },
     //私信消息
     setMsg: function () {

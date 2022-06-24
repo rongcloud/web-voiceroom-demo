@@ -4,6 +4,7 @@
       :modal="false"
       :visible.sync="drawer"
       :direction="direction"
+      class="drawerWrapperControl"
       :show-close="false"
       :withHeader="false"
       size="2.04rem"
@@ -36,6 +37,9 @@ export default {
       direction: "btt",
     };
   },
+  props: {
+    roomType: String,
+  },
   components: {},
   watch: {},
   methods: {
@@ -45,7 +49,13 @@ export default {
 
     cancelSeat: async function () {
       try {
-        await this.$RCVoiceRoomLib.cancelRequestSeat();
+        console.log("this.roomType", this.roomType);
+        if (this.roomType && this.roomType == "live") {
+          this.$store.state.picking = "";
+          await this.$RCLiveRoomLib.cancelRequestSeat();
+        } else {
+          await this.$RCVoiceRoomLib.cancelRequestSeat();
+        }
         this.$store.dispatch("showToast", {
           value: "已撤回连线申请",
         });
@@ -67,6 +77,12 @@ export default {
 <style scoped>
 .CancelEvenSeat {
   text-align: center;
+}
+
+.drawerWrapperControl {
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 .CancelEvenSeat /deep/ .el-drawer {
   background-color: rgba(92, 80, 149, 1) !important;

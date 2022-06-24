@@ -2,6 +2,7 @@
   <div class="UserList">
     <el-drawer
       title="用户列表"
+      class="UserListDrawer"
       :visible.sync="drawer"
       direction="btt"
       size="100%"
@@ -91,6 +92,12 @@ export default {
 <style scoped>
 .UserList {
   text-align: center;
+}
+
+.UserListDrawer {
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 
 .UserList /deep/ .el-drawer {

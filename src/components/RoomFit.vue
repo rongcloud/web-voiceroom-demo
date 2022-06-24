@@ -71,6 +71,9 @@ export default {
 .RoomFit {
   font-size: 0.16rem;
   text-align: center;
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 
 .RoomFit .el-drawer {

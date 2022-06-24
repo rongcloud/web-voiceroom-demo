@@ -1,5 +1,5 @@
 <template>
-  <div class="audienceContainer">
+  <div class="audienceContainer" @click="audienceList">
     <img :src="audienceIcon" class="audienceIcon" /> {{ num }}
   </div>
 </template>
@@ -13,6 +13,11 @@ export default {
   },
   props: {
     num: Number,
+  },
+  methods: {
+    audienceList: function () {
+      this.$emit("audienceList");
+    },
   },
 };
 </script>

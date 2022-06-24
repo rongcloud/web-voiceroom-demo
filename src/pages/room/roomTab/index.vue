@@ -8,11 +8,7 @@
       ></el-image>
       <div class="room-text">
         <div class="room-title">
-          {{
-            data.roomName.length > 10
-              ? data.roomName.substring(0, 10) + "..."
-              : data.roomName
-          }}
+          {{ data.roomName }}
         </div>
         <el-image
           class="room-portrait"
@@ -84,6 +80,18 @@ export default {
       if (GetQueryString("roomType")) {
         switch (GetQueryString("roomType")) {
           case "liveRoom":
+            if (data.isPrivate == 1) {
+              this.key = data.password;
+              this.roomId = data.roomId;
+              this.$refs.PopuInput.setPopup({
+                type: "number",
+                title: "请输入 4 位数字密码",
+                placeholder: "请输入 4 位数字密码",
+              });
+            } else {
+              this.$router.push("/live?roomid=" + data.roomId);
+            }
+            console.log("直播密码房间加入");
             break;
 
           default:

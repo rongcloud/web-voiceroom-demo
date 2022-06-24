@@ -2,7 +2,7 @@
   <div class="UserClickSeizeSeat">
     <el-drawer
       :modal="false"
-      :visible.sync="UserClickSeizeSeat"
+      :visible="false"
       :direction="direction"
       :show-close="false"
       class="drawerWrapperControl"
@@ -10,21 +10,6 @@
       :withHeader="false"
       size="2.995rem"
     >
-      <div class="UserClickSeizeSeat-admin" @click="SeatAdminChange(userInfo)">
-        <span
-          :style="
-            userInfo['isAdmin']
-              ? {
-                  backgroundImage: isAdmin,
-                }
-              : {
-                  backgroundImage: notAdmin,
-                }
-          "
-          class="UserClickSeizeSeat-admin-span"
-          >{{ userInfo["isAdmin"] ? "撤回管理" : "设为管理" }}</span
-        >
-      </div>
       <div class="UserClickSeizeSeat-top">
         <div class="UserClickSeizeSeat-top-img">
           <div
@@ -68,6 +53,7 @@
             >发私信</span
           >
         </div>
+        <!-- <div class="center-button">3</div> -->
       </div>
       <div class="UserClickSeizeSeat-footer">
         <div
@@ -106,7 +92,9 @@ export default {
     FunctionKey,
   },
   watch: {
-    listeuserInfoFunKeys: function () {},
+    listeuserInfoFunKeys: function () {
+      // console.log(newvalue);
+    },
   },
   computed: {
     listeuserInfoFunKeys() {
@@ -115,8 +103,10 @@ export default {
   },
   methods: {
     UserClickSeizeSeatOpen: function (item) {
+      console.log(item);
       this.userInfo = item.item;
       this.userInfoFunKeys = item.value;
+      console.log(this.userInfoFunKeys);
       this.UserClickSeizeSeat = true;
     },
     closeUserClickSeizeSeat: function () {
@@ -125,8 +115,10 @@ export default {
     },
     UserClickSeizeSeatClose: function () {
       this.userInfoFunKeys = [];
+      //   this.$emit("UserInforClose");
     },
     SeatAdminChange: function (item) {
+      console.log(item);
       this.UserClickSeizeSeat = false;
       request
         .setManage({
@@ -142,7 +134,7 @@ export default {
               userName: item.userName,
               isAdmin: !item.isAdmin,
             };
-            this.$RCVoiceRoomLib.emit("MessageReceived", {
+            this.$RCVoiceRoomLib.emit("onMessageReceived", {
               //发本地
               //模拟本地消息发送
               messageType: "RC:Chatroom:Admin",
@@ -150,22 +142,19 @@ export default {
               content: message,
             });
             this.$RCVoiceRoomLib.im.messageUpdate("RC:Chatroom:Admin", message); //发message
-            this.$RCVoiceRoomLib.notifyVoiceRoom(
-              "VoiceRoomNeedRefreshmanagers",
-              ""
-            );
+            this.$RCVoiceRoomLib.im.messageUpdate("RC:VRLRefreshMsg", {
+              name: "VoiceRoomNeedRefreshmanagers",
+            });
           }
         });
     },
     giftClick: function (userInfo) {
+      console.log("送礼物:", userInfo);
       this.UserClickSeizeSeat = false;
       this.$emit("giftClick", userInfo);
     },
     letterClick: function (userInfo) {
-      console.log("发私信功能待开放:", userInfo);
-      this.$store.dispatch("showToast", {
-        value: "功能待开放",
-      });
+      console.log("发私信:", userInfo);
       this.UserClickSeizeSeat = false;
     },
   },

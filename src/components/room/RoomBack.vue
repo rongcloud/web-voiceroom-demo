@@ -52,6 +52,11 @@ export default {
 .RoomBack {
   text-align: center;
 }
+#RoomBack {
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
+}
 .RoomBack /deep/ .el-drawer {
   background-color: rgba(92, 80, 149, 1) !important;
   /* background-image: url(../../assets/wheat/backBackground.png); */

@@ -107,7 +107,7 @@
       <!-- <el-button
         @click="getSeatInfolist"
         type="primary"
-        style="margin-left: 16px"
+        style="margin-left: 16px; z-index: 10000000; position: absolute"
       >
         获取远程数据
       </el-button> -->
@@ -199,6 +199,7 @@ import {
   outset,
 } from "./static.js";
 import request from "../../request/index";
+import LoginVue from "../../components/Login.vue";
 export default {
   name: "House",
   data: function () {
@@ -323,6 +324,7 @@ export default {
               ...item,
               ...this.$store.state.roomUserList[index],
             };
+
             break;
           }
         }
@@ -635,8 +637,9 @@ export default {
 
     //礼物请求获取数据
     getGiftList: function () {
+      console.log(this.$RCVoiceRoomLib._roomidcli);
       return request
-        .giftList({
+        .getGiftList({
           roomId: this.$RCVoiceRoomLib._roomidcli,
         })
         .then(async (res) => {
@@ -1003,6 +1006,7 @@ export default {
               res.data.data.backgroundUrl
             );
             this.$store.dispatch("getroomTitle", res.data.data.roomName);
+
             this.$store.dispatch("getroomPrivate", {
               isPrivate: res.data.data.isPrivate,
               password: res.data.data.password,
@@ -1012,6 +1016,7 @@ export default {
             this.getroomuser(createUser);
             this.$nextTick(() => {
               this.$store.dispatch("getChatroom", this.$refs.chatroom);
+              this.$refs.chatroom.welcome();
               this.roomId = this.$RCVoiceRoomLib._roomidcli;
               // console.log(this.$RCVoiceRoomLib);
               if (
@@ -1033,7 +1038,6 @@ export default {
                 this.talkTop = 64.5;
                 this.talkHeight = 28;
               }
-
               if (
                 res.data.data.createUser.userId !=
                 this.$RCVoiceRoomLib.im.userId
@@ -1051,8 +1055,8 @@ export default {
             console.log("err", res.data);
           }
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          // console.log(err);
         });
     },
 
@@ -1102,10 +1106,10 @@ export default {
               item
             ) {
               await this.$RCVoiceRoomLib.enterSeat(0);
-              console.log(
-                "isDisableAudioRecording",
-                this.$RCVoiceRoomLib.isDisableAudioRecording()
-              );
+              // console.log(
+              //   "isDisableAudioRecording",
+              //   this.$RCVoiceRoomLib.isDisableAudioRecording()
+              // );
               if (
                 "extra" in this.$RCVoiceRoomLib.seatInfoList[0] &&
                 JSON.parse(this.$RCVoiceRoomLib.seatInfoList[0]["extra"])[
@@ -1115,9 +1119,9 @@ export default {
                 this.$RCVoiceRoomLib.disableAudioRecording(true);
               }
 
-              // setTimeout(() => {
-              //   this.SetSeatList(Obj);
-              // }, 50);
+              setTimeout(() => {
+                this.SetSeatList(Obj);
+              }, 500);
             }
           });
         })
@@ -1224,13 +1228,19 @@ export default {
   },
   created() {
     this.$nextTick(async () => {
-      const arr = await this.$RCVoiceRoomLib.getRequestSeatUserIds();
-      this.$store.dispatch("getRequestSeatUserIds", arr);
+      if (this.$RCVoiceRoomLib._roomidcli) {
+        const arr = await this.$RCVoiceRoomLib.getRequestSeatUserIds();
+        this.$store.dispatch("getRequestSeatUserIds", arr);
+      }
     });
   },
   mounted() {
-    this.getRoominformation();
+    console.log("mounted::::");
+    if (this.$RCVoiceRoomLib._roomidcli) {
+      this.getRoominformation();
+    }
     console.log(navigator.userAgent);
+    // console.log("当前seat：", this.$store.state.GiftAndManageList);
     if (
       navigator.userAgent.indexOf("Macintosh") > -1 &&
       navigator.userAgent.indexOf("Safari") > -1 &&
@@ -1244,7 +1254,9 @@ export default {
         center: true,
       })
         .then(() => {
-          this.$RCVoiceRoomLib.enableSpeaker();
+          this.$RCVoiceRoomLib.enableSpeaker().then(() => {
+            this.SetSeatList(this.$store.state.GiftAndManageList);
+          });
         })
         .catch(() => {
           // console.log("取消");

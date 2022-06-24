@@ -19,33 +19,39 @@
       </el-upload>
 
       <div class="title">
-        <input class="inputer" v-model="roomName" type="text" />
+        <input class="inputer" v-model="roomName" type="text" maxlength="20" />
       </div>
       <div class="check">
         <el-radio v-model="radio" label="0">公开 </el-radio>
         <el-radio v-model="radio" label="1">私密 </el-radio>
       </div>
     </div>
-    <div class="startBtn" @click="startShow">开始视频直播</div>
+    <PopuInput ref="PopuInput" @clickYes="clickYes" />
+    <div class="startBtn" @click="preStart">开始视频直播</div>
   </div>
 </template>
 <script>
-import { paramCheck } from "../../utils/paramCheck";
 import Request from "../../request/index.js";
 import { btoken } from "../../request/BusinessToken";
+import PopuInput from "../../components/PopupInput.vue";
+import config from "../../config";
+import { coverPhoto } from "../../pages/room/coverPhoto.js";
 
 export default {
   name: "createRoom",
+  components: { PopuInput },
   data: function () {
     return {
       updateImgUrl: "/api/file/upload",
       // eslint-disable-next-line no-undef
-      imgBackground: require("../../assets/live/title-icon.png"),
+      imgBackground: coverPhoto[Math.floor(Math.random() * 6)],
       // eslint-disable-next-line no-undef
       imgIcon: require("../../assets/live/title-icon-upload.png"),
       radio: "0",
       roomName: "",
       btoken: btoken,
+      passWord: "",
+      antiShake: true
     };
   },
   props: {
@@ -59,15 +65,33 @@ export default {
       console.log("上传前");
     },
     handleAvatarSuccess: function (e) {
-      console.log(
-        "头像上传成功回调",
-        e,
-        this.$store.state.defaultAddress + e.data
-      );
-      this.$data.imgBackground = this.$store.state.defaultAddress + e.data;
+      console.log("头像上传成功回调", e, config.picPath);
+      this.$data.imgBackground = config.picPath + e.data;
+    },
+    clickYes: function (v) {
+      console.log("数字上报", v);
+      this.$data.passWord = v;
+      this.startShow();
+    },
+    preStart: function () {
+      // parmCheck();
+      if (this.$data.roomName == "") {
+        this.$message.error("房间名称不能为空");
+        return;
+      }
+      if (this.$data.radio == "1") {
+        this.$refs.PopuInput.setPopup({
+          type: "number",
+          title: "请输入 4 位数字密码",
+          placeholder: "请输入 4 位数字密码",
+        });
+      } else {
+        this.startShow();
+      }
     },
     startShow: function () {
-      // parmCheck();
+      if(!this.$data.antiShake)return;
+      this.$data.antiShake = false;
       let data = {
         name: this.$data.roomName,
         isPrivate: this.$data.radio,
@@ -75,7 +99,12 @@ export default {
         backgroundUrl: "",
         roomType: 3, //直播
       };
+      if (this.$data.radio == "1") {
+        data.password = this.$data.passWord;
+      }
+      console.log("config.picPath", config.picPath, this.$data.imgBackground);
       Request.creatLiveRoom(data).then(async (res) => {
+        this.$data.antiShake = true;
         if (res.data.code != 10000) {
           // console.log(res.data.msg);
           this.$store.dispatch("showToast", {
@@ -84,10 +113,9 @@ export default {
           this.$emit("startShow", res.data);
         } else {
           console.log("创建成功", res.data);
+          Request.joinRoom(res.data.data.roomId);
           this.$emit("startShow", res.data);
         }
-        //参数检查逻辑
-        paramCheck(this.$data.roomName, "number");
       });
     },
   },
@@ -98,7 +126,7 @@ export default {
   position: relative;
   font-size: 0px;
   border-radius: 0px 0px 20px 20px;
-  width: 375px;
+  width: 100%;
   height: 172px;
   background: rgba(3, 6, 47, 0.2);
   color: #fff;
@@ -133,7 +161,7 @@ export default {
   top: 0px;
   left: 92px;
   font-size: 14px;
-  color: #858585;
+  color: #fff;
   position: absolute;
   border: #333 1px solid;
   border-radius: 20px;
@@ -177,6 +205,6 @@ export default {
   text-align: center;
   color: #fff;
   border-radius: 100px;
-  margin-left: calc(50vw - 145.5px);
+  margin-left: calc(187.5px - 145.5px);
 }
 </style>

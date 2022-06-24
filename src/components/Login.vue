@@ -46,7 +46,7 @@
       和
       <a class="verificationLink" @click="clickLinksec">《隐私政策》</a>
       并新登录即注册开通融云发者账号
-      <div class="verificationEdition">融云 RTC 1.0.1</div>
+      <div class="verificationEdition">融云 RTC 2.0.0</div>
     </div>
   </div>
 </template>
@@ -150,6 +150,7 @@ export default {
 
     // 开始登录
     login() {
+      console.log(this.loginForm.phone);
       if (this.checked) {
         const regMobile =
           /^(0|86|17951)?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;
@@ -160,6 +161,7 @@ export default {
         ) {
           return;
         }
+        // console.log(this.getCookie("imToken"));
         Request.userLand({
           mobile: this.loginForm.phone,
           verifyCode: this.loginForm.verificationCode,
@@ -167,12 +169,20 @@ export default {
           portrait: "",
           deviceId: "",
           platform: "web",
+          platformType: "web",
+          channel: this.getCookie("channel") || "",
+          version: "2.0.0",
         })
           .then((response) => {
             if (response.data.code == 10000) {
               this.$store.dispatch("updateUserInfo", response.data.data);
+              this.$store.dispatch("getRoomType", "voice");
+              // this.$RCVoiceRoomLib.connect(response.data.data.imToken);
+              this.$RongIMLib.connect(response.data.data.imToken);
               this.$router.replace("/home");
-              this.$RCVoiceRoomLib.connect(response.data.data.imToken);
+              console.log("登录账号", response.data.data);
+              // this.$RCVoiceRoomLib.connect(this.$store.state.userInfo.imToken);
+              // this.$RCLiveRoomLib.connect(response.data.data.imToken);
             } else {
               this.$message({
                 showClose: true,
@@ -219,6 +229,29 @@ export default {
     //点击隐私政策
     clickLinksec: function () {
       window.open("https://cdn.ronghub.com/Privacy_agreement_zh.html");
+    },
+
+    //获取cookie的值
+    getCookie(cookie_name) {
+      var allcookies = document.cookie;
+      //索引长度，开始索引的位置
+      var cookie_pos = allcookies.indexOf(cookie_name);
+
+      // 如果找到了索引，就代表cookie存在,否则不存在
+      if (cookie_pos != -1) {
+        // 把cookie_pos放在值的开始，只要给值加1即可
+        //计算取cookie值得开始索引，加的1为“=”
+        cookie_pos = cookie_pos + cookie_name.length + 1;
+        //计算取cookie值得结束索引
+        var cookie_end = allcookies.indexOf(";", cookie_pos);
+
+        if (cookie_end == -1) {
+          cookie_end = allcookies.length;
+        }
+        //得到想要的cookie的值
+        var value = unescape(allcookies.substring(cookie_pos, cookie_end));
+      }
+      return value;
     },
   },
 };

@@ -17,6 +17,7 @@ li {
 .CallRoom {
     height: calc(100vh - 0.65rem);
     background: #F6F8F9;
+    position: relative;
     overflow: hidden;
     text-align: center;
 
@@ -46,12 +47,11 @@ li {
     font-size: 0.16rem;
     font-weight: 400;
     opacity: 0.5;
-    margin-top: 3.8rem;
+    margin-top:56vh;
 }
 
 .infinite-list-wrapper {
     height: calc(100vh - 0.65rem);
-    margin-top: 0.65rem;
 
 }
 

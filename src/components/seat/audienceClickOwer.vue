@@ -4,6 +4,7 @@
       :modal="false"
       :visible.sync="drawer"
       :direction="direction"
+      class="drawerWrapperControl"
       :show-close="false"
       :close="audienceClickOwerClose"
       :withHeader="false"
@@ -113,6 +114,11 @@ export default {
 <style scoped>
 .audienceClickOwer {
   text-align: center;
+}
+.drawerWrapperControl {
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 .audienceClickOwer /deep/ .el-drawer {
   background-color: rgba(92, 80, 149, 1) !important;

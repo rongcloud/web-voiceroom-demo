@@ -4,6 +4,7 @@
       :modal="false"
       :visible.sync="drawer"
       :direction="direction"
+      class="drawerWrapperCantrol"
       :show-close="false"
       :close="userClickOwnerClose"
       :withHeader="false"
@@ -110,6 +111,11 @@ export default {
 <style scoped>
 .userClickOwner {
   text-align: center;
+}
+.drawerWrapperCantrol {
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 .userClickOwner /deep/ .el-drawer {
   background-color: rgba(92, 80, 149, 1) !important;

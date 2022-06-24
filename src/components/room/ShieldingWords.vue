@@ -27,7 +27,9 @@
         >
         <el-tag
           :key="tag.id"
-          v-for="tag in this.$store.state.sensitiveList"
+          v-for="tag in this.$store.state.roomType == 'live'
+            ? this.dynamicTags
+            : this.$store.state.sensitiveList"
           closable
           :disable-transitions="false"
           @close="handleClose(tag)"
@@ -59,6 +61,7 @@ export default {
       num: 0,
       inputVisible: false,
       inputValue: "",
+      dynamicTags: [],
     };
   },
   components: {},
@@ -70,21 +73,37 @@ export default {
   methods: {
     openShieldingWords: function () {
       this.ShieldingWords = true;
-      this.$store.dispatch("getsensitiveList", []);
-      request
-        .getsensitiveList({
-          roomId: this.$RCVoiceRoomLib._roomidcli,
-        })
-        .then((res) => {
-          if (
-            res.data.code == 10000 &&
-            "data" in res.data &&
-            Object.prototype.toString.call(res.data.data).indexOf("Array") != -1
-          ) {
-            this.num = res.data.data.length;
-            this.$store.dispatch("getsensitiveList", [...res.data.data]);
+      this.dynamicTags = [];
+      if (this.$store.state.roomType == "live") {
+        let arr = [];
+        if (this.$RCLiveRoomLib.im._roomShields) {
+          for (var i = 0; i < this.$RCLiveRoomLib.im._roomShields.length; i++) {
+            let o = {
+              name: this.$RCLiveRoomLib.im._roomShields[i],
+              id: i,
+            };
+            arr.push(o);
           }
-        });
+        }
+        this.dynamicTags = arr;
+        this.num = arr.length;
+      } else {
+        request
+          .getsensitiveList({
+            roomId: this.$RCVoiceRoomLib._roomidcli,
+          })
+          .then((res) => {
+            if (
+              res.data.code == 10000 &&
+              "data" in res.data &&
+              Object.prototype.toString.call(res.data.data).indexOf("Array") !=
+                -1
+            ) {
+              this.num = res.data.data.length;
+              this.$store.dispatch("getsensitiveList", [...res.data.data]);
+            }
+          });
+      }
     },
 
     closeShieldingWords: function () {
@@ -92,37 +111,50 @@ export default {
     },
 
     handleClose(tag) {
-      console.log(tag);
-      request
-        .sensitiveDelet({
-          id: tag.id,
-        })
-        .then((res) => {
-          if (res.data.code == 10000) {
-            let array = JSON.parse(
-              JSON.stringify(this.$store.state.sensitiveList)
-            );
-            let index = -1;
-            for (let i = 0; i < array.length; i++) {
-              if (array[i]["name"] == tag.name) {
-                index = i;
-              }
-            }
-            if (index > -1) {
-              array.splice(index, 1);
-            }
-            this.num = array.length;
-            // console.log(array);
-            this.$RCVoiceRoomLib.notifyVoiceRoom(
-              "EVENT_DELETE_SHIELD",
-              tag.name
-            );
-            this.$store.dispatch("getsensitiveList", [...array]);
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
+      if (this.$store.state.roomType == "live") {
+        this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+        this.num = this.dynamicTags.length;
+        let arr = [];
+        for (var n in this.dynamicTags) {
+          arr.push(this.dynamicTags[n].name);
+        }
+        this.$RCLiveRoomLib.updateKeyValue({
+          key: "ROOM_INFO_PRE_shields",
+          value: arr,
         });
+        this.$RCLiveRoomLib.im._roomShields = arr;
+      } else {
+        request
+          .sensitiveDelet({
+            id: tag.id,
+          })
+          .then((res) => {
+            if (res.data.code == 10000) {
+              let array = JSON.parse(
+                JSON.stringify(this.$store.state.sensitiveList)
+              );
+              let index = -1;
+              for (let i = 0; i < array.length; i++) {
+                if (array[i]["name"] == tag.name) {
+                  index = i;
+                }
+              }
+              if (index > -1) {
+                array.splice(index, 1);
+              }
+              this.num = array.length;
+              // console.log(array);
+              this.$RCVoiceRoomLib.notifyVoiceRoom(
+                "EVENT_DELETE_SHIELD",
+                tag.name
+              );
+              this.$store.dispatch("getsensitiveList", [...array]);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }
     },
 
     showInput() {
@@ -134,32 +166,55 @@ export default {
 
     handleInputConfirm() {
       let inputValue = this.inputValue;
-      if (inputValue && this.num < 10) {
-        request
-          .sensitiveAdd({
-            id: 0,
+      if (this.$store.state.roomType == "live") {
+        console.log("inputValue", inputValue);
+        if (inputValue && this.num < 10) {
+          this.dynamicTags.push({
+            id: Math.random(),
             name: inputValue,
-            roomId: this.$RCVoiceRoomLib._roomidcli,
-          })
-          .then((res) => {
-            if (res.data.code == 10000) {
-              let arr = JSON.parse(
-                JSON.stringify(this.$store.state.sensitiveList)
-              );
-              arr.push(res.data.data);
-              // console.log(arr);
-              this.num = arr.length;
-              this.$store.dispatch("getsensitiveList", [...arr]);
-              this.$RCVoiceRoomLib.notifyVoiceRoom(
-                "EVENT_ADD_SHIELD",
-                inputValue
-              );
-            }
-          })
-          .catch((err) => {
-            console.log("err", err);
           });
+          this.num = this.dynamicTags.length;
+
+          let arr = [];
+          for (var n in this.dynamicTags) {
+            arr.push(this.dynamicTags[n].name);
+          }
+
+          this.$RCLiveRoomLib.updateKeyValue({
+            key: "ROOM_INFO_PRE_shields",
+            value: arr,
+          });
+          this.$RCLiveRoomLib.im._roomShields = arr;
+        }
+      } else {
+        if (inputValue && this.num < 10) {
+          request
+            .sensitiveAdd({
+              id: 0,
+              name: inputValue,
+              roomId: this.$RCVoiceRoomLib._roomidcli,
+            })
+            .then((res) => {
+              if (res.data.code == 10000) {
+                let arr = JSON.parse(
+                  JSON.stringify(this.$store.state.sensitiveList)
+                );
+                arr.push(res.data.data);
+                // console.log(arr);
+                this.num = arr.length;
+                this.$store.dispatch("getsensitiveList", [...arr]);
+                this.$RCVoiceRoomLib.notifyVoiceRoom(
+                  "EVENT_ADD_SHIELD",
+                  inputValue
+                );
+              }
+            })
+            .catch((err) => {
+              console.log("err", err);
+            });
+        }
       }
+
       this.inputVisible = false;
       this.inputValue = "";
     },
@@ -173,6 +228,9 @@ export default {
 .ShieldingWords-drawer {
   font-size: 0.16rem;
   text-align: center;
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 
 .ShieldingWords-drawer .el-drawer {
@@ -197,7 +255,7 @@ export default {
 }
 
 .ShieldingWords-body {
-  width: 375px;
+  width: 100%;
   height: 0.58rem;
   text-align: left;
   border-bottom: 1px solid saddlebrown;

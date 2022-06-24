@@ -12,7 +12,7 @@
       @clickYes="clickYes"
       @clickTitleYes="clickTitleYes"
     />
-    <Notice ref="Notice" @clickYes="GetNotice" />
+    <Notice ref="Notice" @clickYes="GetNotice" @NoticeUpdate="NoticeUpdate" />
   </span>
 </template>
 <script>
@@ -65,19 +65,50 @@ export default {
           }
           break;
         case "离开房间":
-          try {
-            await this.$RCVoiceRoomLib
-              .leaveRoom(this.$RCVoiceRoomLib._roomidcli)
-              .then(() => {
-                this.$router.go(-1);
+          console.log("离开房间");
+          if (this.$store.state.roomType == "live") {
+            try {
+              this.$RCLiveRoomLib.im.messageUpdate("RC:VRLRefreshMsg", {
+                name: "RCAudienceLeaveRoom",
+                content: this.$RCLiveRoomLib.im.userId,
               });
-          } catch (error) {
-            this.$store.dispatch("showToast", {
-              value: "离开房间失败",
-            });
-            console.log(error);
+              console.log("living");
+              await this.$RCLiveRoomLib.leaveRoom(
+                this.$RCLiveRoomLib._roomidcli
+              );
+              this.$RCLiveRoomLib._roomidcli = ''
+              console.log("living", this.$RCLiveRoomLib._roomidcli);
+              this.$router.go(-1);
+            } catch (error) {
+              this.$store.dispatch("showToast", {
+                value: "离开房间失败",
+              });
+              console.log(error);
+            }
+          } else {
+            try {
+              this.$RCVoiceRoomLib.im.messageUpdate("RC:VRLRefreshMsg", {
+                name: "RCAudienceLeaveRoom",
+                content: this.$RCVoiceRoomLib.im.userId,
+              });
+              await this.$RCVoiceRoomLib.leaveRoom(
+                this.$RCVoiceRoomLib._roomidcli
+              );
+              this.$router.go(-1);
+            } catch (error) {
+              this.$store.dispatch("showToast", {
+                value: "离开房间失败",
+              });
+              console.log(error);
+            }
           }
 
+          break;
+        case "收起房间":
+          this.$router.go(-1);
+          break;
+        case "返回列表":
+          this.$router.go(-1);
           break;
         case "房间上锁":
           this.$emit("closeRoomFit");
@@ -93,7 +124,10 @@ export default {
             .setRoomPrivate({
               isPrivate: 0,
               password: "",
-              roomId: this.$RCVoiceRoomLib._roomidcli,
+              roomId:
+                this.$store.state.roomType == "live"
+                  ? this.$RCLiveRoomLib._roomidcli
+                  : this.$RCVoiceRoomLib._roomidcli,
             })
             .then((res) => {
               if (res.data.code == 10000) {
@@ -120,12 +154,21 @@ export default {
           break;
         case "房间公告":
           this.$emit("closeRoomFit");
-          this.$refs.Notice.setPopup({
-            isShow: true,
-            value: this.$RCVoiceRoomLib.roomInfo["extra"]
-              ? this.$RCVoiceRoomLib.roomInfo["extra"]
-              : "欢迎来到 " + this.$RCVoiceRoomLib.roomInfo["roomName"],
-          });
+          if (this.$store.state.roomType == "live") {
+            this.$refs.Notice.setPopup({
+              isShow: true,
+              value: this.$RCLiveRoomLib.im._roomNotice
+                ? this.$RCLiveRoomLib.im._roomNotice
+                : "欢迎来到 " + this.$RCLiveRoomLib.roomInfo["roomName"],
+            });
+          } else {
+            this.$refs.Notice.setPopup({
+              isShow: true,
+              value: this.$RCVoiceRoomLib.roomInfo["extra"]
+                ? this.$RCVoiceRoomLib.roomInfo["extra"]
+                : "欢迎来到 " + this.$RCVoiceRoomLib.roomInfo["roomName"],
+            });
+          }
           break;
         case "房间背景":
           this.$emit("closeRoomFit");
@@ -133,29 +176,62 @@ export default {
           break;
         case "自由上麦":
           this.$emit("closeRoomFit");
-          await this.$RCVoiceRoomLib.setRoomInfo({
-            ...this.$RCVoiceRoomLib.roomInfo,
-            isFreeEnterSeat: true,
-          });
-          this.$store.dispatch("showToast", {
-            value: "融云 RTC：当前观众可自由上麦",
-          });
+          if (this.$store.state.roomType == "live") {
+            await this.$RCLiveRoomLib.setRoomInfo({
+              ...this.$RCLiveRoomLib.roomInfo,
+              isFreeEnterSeat: true,
+            });
+            this.$store.dispatch("showToast", {
+              value: "融云 RTC：当前观众可自由上麦",
+            });
+            //直播逻辑
 
+            this.$RCLiveRoomLib.updateKeyValue({
+              key: "ROOM_INFO_PRE_FreeEnterSeat",
+              value: 1,
+            });
+          } else {
+            await this.$RCVoiceRoomLib.setRoomInfo({
+              ...this.$RCVoiceRoomLib.roomInfo,
+              isFreeEnterSeat: true,
+            });
+            this.$store.dispatch("showToast", {
+              value: "融云 RTC：当前观众可自由上麦",
+            });
+          }
+          this.$store.state.isFreeEnterSeat = true;
           break;
         case "申请上麦":
           this.$emit("closeRoomFit");
-          await this.$RCVoiceRoomLib.setRoomInfo({
-            ...this.$RCVoiceRoomLib.roomInfo,
-            isFreeEnterSeat: false,
-          });
-          this.$store.dispatch("showToast", {
-            value: "融云 RTC：当前观众上麦上麦要申请",
-          });
-
+          if (this.$store.state.roomType == "live") {
+            await this.$RCLiveRoomLib.setRoomInfo({
+              ...this.$RCLiveRoomLib.roomInfo,
+              isFreeEnterSeat: false,
+            });
+            this.$store.dispatch("showToast", {
+              value: "融云 RTC：当前观众上麦上麦要申请",
+            });
+            //直播逻辑
+            this.$RCLiveRoomLib.updateKeyValue({
+              key: "ROOM_INFO_PRE_FreeEnterSeat",
+              value: 0,
+            });
+          } else {
+            await this.$RCVoiceRoomLib.setRoomInfo({
+              ...this.$RCVoiceRoomLib.roomInfo,
+              isFreeEnterSeat: false,
+            });
+            this.$store.dispatch("showToast", {
+              value: "融云 RTC：当前观众上麦上麦要申请",
+            });
+            //直播逻辑
+          }
+          this.$store.state.isFreeEnterSeat = false;
           break;
         case "全麦锁麦":
           try {
             this.$emit("closeRoomFit");
+            console.log(this.$RCVoiceRoomLib.roomInfo);
             this.$RCVoiceRoomLib
               .setRoomInfo({
                 ...this.$RCVoiceRoomLib.roomInfo,
@@ -169,18 +245,18 @@ export default {
               this.$store.dispatch("showToast", {
                 value: "融云 RTC:全部麦位已静音",
               });
-            }, 50);
+            }, 200);
           } catch (error) {
             this.$store.dispatch("showToast", {
               value: "全麦锁麦失败",
             });
-
             console.log(error);
           }
 
           break;
         case "解锁全麦":
           this.$emit("closeRoomFit");
+          console.log(this.$RCVoiceRoomLib.roomInfo);
           try {
             await this.$RCVoiceRoomLib.setRoomInfo({
               ...this.$RCVoiceRoomLib.roomInfo,
@@ -191,7 +267,7 @@ export default {
               this.$store.dispatch("showToast", {
                 value: "融云 RTC:已解锁全麦",
               });
-            }, 50);
+            }, 200);
           } catch (error) {
             this.$store.dispatch("showToast", {
               value: "解锁全麦失败",
@@ -212,7 +288,7 @@ export default {
               this.$store.dispatch("showToast", {
                 value: "融云 RTC：全部座位已锁定",
               });
-            }, 50);
+            }, 200);
           } catch (error) {
             this.$store.dispatch("showToast", {
               value: "全麦锁座失败",
@@ -233,7 +309,7 @@ export default {
               this.$store.dispatch("showToast", {
                 value: "融云 RTC：已解锁全座",
               });
-            }, 50);
+            }, 200);
           } catch (error) {
             this.$store.dispatch("showToast", {
               value: "解锁全座失败",
@@ -263,10 +339,13 @@ export default {
           try {
             await this.$RCVoiceRoomLib.setRoomInfo({
               ...this.$RCVoiceRoomLib.roomInfo,
+              isLockAll: false,
+              isMuteAll: false,
               seatCount: 5,
             });
             setTimeout(() => {
               this.$store.dispatch("getSeatInfoList");
+              // console.log(this.$RCVoiceRoomLib.roomInfo);
               seatcountChange = {
                 count: 4,
               };
@@ -295,6 +374,8 @@ export default {
           try {
             await this.$RCVoiceRoomLib.setRoomInfo({
               ...this.$RCVoiceRoomLib.roomInfo,
+              isLockAll: false,
+              isMuteAll: false,
               seatCount: 9,
             });
 
@@ -443,12 +524,14 @@ export default {
       }
     },
     clickYes: function (value) {
-      // console.log("roomKey", value);
       request
         .setRoomPrivate({
           isPrivate: 1,
           password: value,
-          roomId: this.$RCVoiceRoomLib._roomidcli,
+          roomId:
+            this.$store.state.roomType == "live"
+              ? this.$RCLiveRoomLib._roomidcli
+              : this.$RCVoiceRoomLib._roomidcli,
         })
         .then((res) => {
           // console.log(res);
@@ -456,6 +539,8 @@ export default {
             this.$store.dispatch("showToast", {
               value: "设置成功",
             });
+            console.log("this.$refs.PopuInput", this.$refs.PopuInput);
+            this.$refs.PopuInput.onClose();
             this.$store.dispatch("getroomPrivate", {
               isPrivate: 1,
               password: value,
@@ -463,20 +548,39 @@ export default {
           }
         });
     },
+    NoticeUpdate: function (notice) {
+      //修改公告上报
+      console.log("notice", notice);
+      this.$RCLiveRoomLib.im._roomNotice = notice;
+      this.$RCLiveRoomLib.updateKeyValue({
+        key: "ROOM_INFO_PRE_notice",
+        value: notice,
+      });
+    },
     clickTitleYes: function (value) {
       // console.log("Title", value);
       request
         .setRoomTitle({
           name: value,
-          roomId: this.$RCVoiceRoomLib._roomidcli,
+          roomId:
+            this.$store.state.roomType == "live"
+              ? this.$RCLiveRoomLib._roomidcli
+              : this.$RCVoiceRoomLib._roomidcli,
         })
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           if (res.data.code == 10000) {
-            this.$RCVoiceRoomLib.setRoomInfo({
-              ...this.$RCVoiceRoomLib.roomInfo,
-              roomName: value,
-            });
+            if (this.$store.state.roomType == "live") {
+              this.$RCLiveRoomLib.setRoomInfo({
+                ...this.$RCLiveRoomLib.roomInfo,
+                roomName: value,
+              });
+            } else {
+              this.$RCVoiceRoomLib.setRoomInfo({
+                ...this.$RCVoiceRoomLib.roomInfo,
+                roomName: value,
+              });
+            }
             this.$store.dispatch("getroomTitle", value);
           } else {
             this.$store.dispatch("showToast", {
@@ -486,22 +590,41 @@ export default {
         });
     },
     GetNotice: function (value) {
-      this.$RCVoiceRoomLib.setRoomInfo({
-        ...this.$RCVoiceRoomLib.roomInfo,
-        extra: value,
-      });
-      this.$RCVoiceRoomLib.roomInfo.extra = value;
-      let txt = {
-        content: "房间公告已更新!",
-      };
-      this.$RCVoiceRoomLib.im.messageUpdate("RC:TxtMsg", txt);
-
-      this.$RCVoiceRoomLib.emit("MessageReceived", {
-        //发本地
-        //模拟本地消息发送
-        messageType: "RC:TxtMsg",
-        content: txt,
-      });
+      if (this.$store.state.roomType == "live") {
+        this.$RCLiveRoomLib.setRoomInfo({
+          ...this.$RCLiveRoomLib.roomInfo,
+          extra: value,
+        });
+        this.$RCLiveRoomLib.roomInfo.extra = value;
+        console.log("value", value);
+        let txt = {
+          content: "房间公告已更新!",
+        };
+        this.$RCLiveRoomLib.im.messageUpdate("RC:TxtMsg", txt);
+        this.$RCLiveRoomLib.emit("MessageReceived", {
+          //发本地
+          //模拟本地消息发送
+          messageType: "RC:TxtMsg",
+          content: txt,
+        });
+      } else {
+        this.$RCVoiceRoomLib.setRoomInfo({
+          ...this.$RCVoiceRoomLib.roomInfo,
+          extra: value,
+        });
+        this.$RCVoiceRoomLib.roomInfo.extra = value;
+        console.log("value", value);
+        let txt = {
+          content: "房间公告已更新!",
+        };
+        this.$RCVoiceRoomLib.im.messageUpdate("RC:TxtMsg", txt);
+        this.$RCVoiceRoomLib.emit("MessageReceived", {
+          //发本地
+          //模拟本地消息发送
+          messageType: "RC:TxtMsg",
+          content: txt,
+        });
+      }
     },
   },
 };

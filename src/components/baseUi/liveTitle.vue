@@ -1,19 +1,42 @@
 <template>
-  <div class="mainContainer" :class="{ audience: !isAnchor }">
+  <div class="topContaniner" :class="{ audience: !isAnchor }">
     <img class="avatar" :src="userAvatar" />
     <div class="title">{{ title }}</div>
-    <div class="followBtn" v-if="!isAnchor">关注</div>
+    <div
+      class="followBtn"
+      :class="{ followed: !this.$store.state.isFollowed }"
+      @click="follow"
+      v-if="!isAnchor"
+    >
+      <span v-if="!this.$store.state.isFollowed">关注</span>
+      <span v-if="this.$store.state.isFollowed">已关注</span>
+    </div>
     <div class="subtitle">
       <img
+        v-if="delay < 100"
         class="icon"
         width="8.5px"
         height="6.5px"
         :src="require('../../assets/live/delay-icon-1.png')"
       />
+      <img
+        v-if="delay >= 100 && delay < 290"
+        class="icon"
+        width="8.5px"
+        height="6.5px"
+        :src="require('../../assets/live/delay-icon-2.png')"
+      />
+      <img
+        v-if="delay >= 290"
+        class="icon"
+        width="8.5px"
+        height="6.5px"
+        :src="require('../../assets/live/delay-icon-3.png')"
+      />
       {{ delay }}
     </div>
     <div class="subContainer">
-      <div class="subBox">
+      <div class="subBox" @click="clickNotice">
         <img
           class="icon"
           width="14px"
@@ -33,6 +56,7 @@
   </div>
 </template>
 <script>
+import Request from "../../request/index.js";
 export default {
   data: function () {
     return {};
@@ -41,19 +65,51 @@ export default {
     title: String,
     isAnchor: Boolean,
     onlineNum: String,
-    giftNum: String,
+    giftNum: Number,
     userAvatar: String,
-    delay: String,
+    delay: Number,
+  },
+  methods: {
+    clickNotice: function () {
+      this.$emit("clickNotice");
+    },
+    follow: function () {
+      // this.$RCVoiceRoomLib.getLatestSeatInfo();
+      Request.follow({ userId: this.$store.state.roomInformation.userId }).then(
+        (res) => {
+          if (res.data.code == 10000) {
+            console.log("关注");
+            this.$store.state.isFollowed = !this.$store.state.isFollowed;
+          }
+        }
+      );
+      //console.log(this.$RCVoiceRoomLib);
+    },
+  },
+  mounted() {
+    Request.getFollowList().then((res) => {
+      if (res.data.code == 10000) {
+        for (var i = 0; i < res.data.data.list.length; i++) {
+          if (
+            res.data.data.list[i].userId ==
+            this.$store.state.roomInformation.userId
+          ) {
+            this.$store.state.isFollowed = true;
+          }
+        }
+      }
+    });
   },
 };
 </script>
 <style scoped>
-.mainContainer {
+.topContaniner {
   position: absolute;
+  z-index: 100;
   top: 30px;
   border-radius: 20px;
   left: 12px;
-  width: 124px;
+  min-width: 136px;
   height: 40px;
   background: rgba(255, 255, 255, 0.25);
   color: #fff;
@@ -61,7 +117,7 @@ export default {
   padding-left: 12px;
 }
 .audience {
-  width: 168px;
+  width: 200px;
 }
 .title {
   position: absolute;
@@ -71,7 +127,11 @@ export default {
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-
+  display: inline-block;
+  width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   letter-spacing: 0px;
   text-align: left;
 }
@@ -119,7 +179,6 @@ export default {
 .followBtn {
   width: 48px;
   height: 28px;
-  background: linear-gradient(90deg, #505dff 0%, #e92b88 100%);
   position: absolute;
   right: 6px;
   top: 6px;
@@ -128,5 +187,11 @@ export default {
   font-size: 12px;
   font-weight: 400;
   border-radius: 14px;
+  background: none;
+  border: #d5d5d5 1px solid;
+}
+.followed {
+  background: linear-gradient(90deg, #505dff 0%, #e92b88 100%);
+  border: none;
 }
 </style>

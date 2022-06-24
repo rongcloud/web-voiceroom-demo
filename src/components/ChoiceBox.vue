@@ -47,6 +47,9 @@ export default {
 <style scoped>
 .popup {
   font-size: 0.14rem;
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 .popup /deep/ .el-dialog {
   border-radius: 0.12rem;

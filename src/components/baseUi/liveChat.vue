@@ -44,19 +44,15 @@ export default {
       that.$refs.container.offsetHeight - that.$refs.body.offsetHeight + "px";
   },
   mounted() {
+    // if (this.$store.state.roomType != "live") {
+    //非直播房间直接发送欢迎
+    // this.welcome();
+    // }
+
     let status = dargStatus.free;
     let startY;
     let originY;
-    this.$nextTick(() => {
-      setTimeout(() => {
-        this.chatList = [
-          "<span style='color:rgba(106, 159, 255, 1);'> 欢迎来到  " +
-            this.setRoomTitle() +
-            " </span>",
-          "<span style='color:rgba(106, 159, 255, 1)'> 感谢使用融云 RTC 语聊房，请遵守相关法规，不要传播低俗、暴力等不良信息。欢迎您把使用过程中的感受反馈给我们。</span>",
-        ];
-      }, 100);
-    });
+
     document.onmousemove = dargIng;
     that.$refs.body.onmousedown = dargStart;
     document.onmouseup = dargEnd;
@@ -75,8 +71,9 @@ export default {
     }, 0);
 
     function setup(option) {
-      that.$refs.body.style.top =
-        option.container.offsetHeight - option.body.offsetHeight + "px";
+      if (that.$refs.body)
+        that.$refs.body.style.top =
+          option.container.offsetHeight - option.body.offsetHeight + "px";
     }
 
     function dargStart(e) {
@@ -111,7 +108,6 @@ export default {
       originY = Number(v);
     }
     function dargEnd() {
-      // console.log("ended");
       status = dargStatus.free;
     }
     function dargIng(e) {
@@ -151,20 +147,33 @@ export default {
     move: function () {
       // console.log("move");
     },
-    //设置房间title
-    setRoomTitle: function () {
-      let title;
-      if (this.$store.state.roomTitle == "undefined") {
-        title = this.$store.state.roomInformation.roomName;
-      } else {
-        title = this.$store.state.roomTitle;
-      }
-
-      if (title.length > 10) {
-        return title.substring(0, 10) + "...";
-      } else {
-        return title;
-      }
+    gift: function () {
+      this.$emit("onGiftMsg");
+    },
+    welcome: function () {
+      console.log(123123123);
+      this.$nextTick(() => {
+        setTimeout(() => {
+          let roomtype = "融云 RTC 语聊房";
+          if (this.$store.state.roomType == "live") {
+            roomtype = "融云 RTC 直播间";
+          }
+          // let title;
+          // if (this.$store.state.roomTitle == "undefined") {
+          //   title = this.$store.state.roomInformation.roomName;
+          // } else {
+          //   title = this.$store.state.roomTitle;
+          // }
+          this.chatList = [
+            "<span style='color:rgba(106, 159, 255, 1);'> 欢迎来到  " +
+              this.$store.state.roomInformation.roomName +
+              " </span>",
+            "<span style='color:rgba(106, 159, 255, 1)'> 感谢使用" +
+              roomtype +
+              "，请遵守相关法规，不要传播低俗、暴力等不良信息。欢迎您把使用过程中的感受反馈给我们。</span>",
+          ];
+        }, 100);
+      });
     },
   },
 };
@@ -191,5 +200,11 @@ export default {
   background: rgba(0, 0, 0, 0.3);
   border-radius: 1px 6px 6px 6px;
   word-break: break-all;
+}
+.voiceIcon {
+  width: 20px;
+  height: 20px;
+  background: url("../../assets/live/icon-miniwave.png") no-repeat;
+  background-size: 18px 18px;
 }
 </style>

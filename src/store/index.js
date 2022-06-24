@@ -39,6 +39,15 @@ const store = new Vuex.Store({
         Chatroom: null,
         micData: [],
         sensitiveList: [],
+        onMic: false,//在麦位上
+        isFollowed: false,//是否已关注
+        giftNum: 0, //礼物数量  
+        isFreeEnterSeat: false, //上麦模式默认需要申请
+        onLink: false, //连线中
+        owerDisconnet: false,//是否为主动断开连接判断
+        roomType: "",
+        picking: '', //主动邀请他人状态
+
         //控制更新
         seatInfoList: 2,
         giftValue: 2,
@@ -59,6 +68,7 @@ const store = new Vuex.Store({
         //设置用户信息
         setUserInfo(state, newVal) {
             state.userInfo = { ...state.userInfo, ...newVal }
+            console.log("更新用户资料", state.userInfo);
         },
         //创建页面图片全局化
         setImgList(state, newVal) {
@@ -152,9 +162,17 @@ const store = new Vuex.Store({
         },
         //设置屏蔽词数据
         setsensitiveList(state, newVal) {
+            console.log("设置", state, newVal);
             state.sensitiveList = newVal.value
         },
-
+        //主动断开连接
+        setOwerDisconnet(state, newVal) {
+            state.owerDisconnet = newVal.value
+        },
+        //修改房间标识
+        setRoomType(state, newVal) {
+            state.roomType = newVal.value
+        },
     },
     actions: {//需要执行多个 mutations 就需要用 action 了
         //更新主播座位信息
@@ -174,7 +192,7 @@ const store = new Vuex.Store({
                 } else {
                     arrList.push({ url: newVal[i], select: false });
                 }
-            };
+            }
             commit('setImgList', arrList)
         },
         //修改房间list
@@ -260,16 +278,27 @@ const store = new Vuex.Store({
         getSpeakingChenge({ commit }, newVal) {
             commit('setSpeakingChenge', { value: newVal })
         },
+
         //房间座位发生改变
         getsetCountsChange({ commit }, newVal) {
             commit('setsetCountsChange', { value: newVal })
         },
+
         //获取屏蔽词
         getsensitiveList({ commit }, newVal) {
+            console.log("获取屏蔽词", newVal)
             commit('setsensitiveList', { value: newVal })
         },
 
-    }
+        //主动断开连接
+        getOwerDisconnet({ commit }, newVal) {
+            commit('setOwerDisconnet', { value: newVal })
+        },
 
+        //主动断开连接
+        getRoomType({ commit }, newVal) {
+            commit('setRoomType', { value: newVal })
+        },
+    }
 })
 export default store

@@ -21,6 +21,10 @@
     font-size: 0.16rem;
     text-align: center;
     color: #ffffff;
+    position: relative;
+    max-width: 375px;
+    left: calc(50vw - 187.5px) !important;
+    
 }
 
 .creat-drawer .el-drawer {
@@ -41,8 +45,9 @@
     display: inline-block;
 }
 
-
-
+.landing {
+    position: relative;
+}
 
 .room-set-img-title {
     font-weight: 500;
@@ -186,4 +191,31 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+}
+
+.miniWindow {
+    position: absolute;
+    z-index: 98;
+    width: 93px;
+    height: 166px;
+    right: 12px;
+    bottom: 113px;
+    border-radius: 5px;
+    background-color: #dd5898;
+}
+
+.miniClose {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 6px;
+    top: 6px;
+    z-index: 99;
+    background: url(../../assets/live/icon-close.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.videocontainer {
+    position: absolute;
 }

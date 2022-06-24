@@ -2,7 +2,7 @@
 
 ## 线上演示 
 
-[ 语聊房demo演示 ](https://apiv1-rcrtc.rongcloud.cn/voice)
+[ 语聊房demo演示 ](https://apiv1-rcrtc.rongcloud.cn/rcrtc)
 
 ![](https://tva1.sinaimg.cn/large/008i3skNly1gruboi2yg9j31000nealm.jpg)
 

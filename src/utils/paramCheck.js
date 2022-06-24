@@ -25,7 +25,6 @@ function paramCheck(target, rule, defaultVaule) {
         }
     }
 }
-
 export {
     paramCheck
 }

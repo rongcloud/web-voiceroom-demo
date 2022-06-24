@@ -5,7 +5,6 @@
     :show-close="false"
     title="房间公告"
     class="popup"
-    width="80%"
     top="25vh"
     @closed="onClosed"
     :center="true"
@@ -52,6 +51,9 @@ export default {
       request.getTextCheck({ text: this.textarea }).then((res) => {
         if (res.data.code == 10000) {
           this.$emit("clickYes", this.textarea);
+          if (this.$store.state.roomType == "live") {
+            this.$emit("NoticeUpdate", this.textarea);
+          }
         } else {
           this.$store.dispatch("showToast", {
             value: res.data.msg,
@@ -66,6 +68,9 @@ export default {
 <style scoped>
 .popup {
   font-size: 0.14rem;
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 .popup /deep/ .el-dialog {
   border-radius: 0.12rem;

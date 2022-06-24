@@ -43,11 +43,13 @@ export default {
   },
   methods: {
     clickBarLeft: function () {
-      if (!this.toolbarData.leftImg) {
-        this.$router.go(-1);
-      } else {
-        this.$emit("BarLeftCallback", this.toolbarData);
-      }
+      this.$router.push("/home");
+      // if (!this.toolbarData.leftImg) {
+      //   this.$router.push("/home");
+      //   //this.$router.go(-1);
+      // } else {
+      //   this.$emit("BarLeftCallback", this.toolbarData);
+      // }
     },
     clickBarRight: function () {
       this.$emit("BarRightCallback");

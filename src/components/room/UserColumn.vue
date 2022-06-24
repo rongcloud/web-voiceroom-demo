@@ -1,5 +1,5 @@
 <template>
-  <div id="usercilumn">
+  <div id="usercilumn" v-if="isActive">
     <div
       class="usercilumnImg"
       :style="
@@ -17,32 +17,71 @@
     <div class="usercilumnName">
       <span class="usercilumnNameValue">{{ item.userName }}</span>
       <span class="usercilumnNamefoot"></span>
+      <div
+        class="usercilumnclick refused"
+        v-if="apply && (this.$store.state.roomType == 'live' ? true : false)"
+        @click="refuse(item)"
+      >
+        拒绝
+      </div>
       <div class="usercilumnclick" @click="userclick(item)">{{ item.key }}</div>
     </div>
   </div>
 </template>
 <script>
 export default {
-  props: ["item"],
+  props: ["item", "apply"],
   data() {
-    return {};
+    return { isActive: true };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      this.$data.isActive = true;
+      //   console.log(this.$store.state.defaultAddress);
+      //   console.log(this.$store.state.defaultAvatarUrl);
+    });
+  },
   methods: {
     setPopup: function (item) {
       console.log(item);
     },
     onClosed: function () {},
+    refuse: async function (item) {
+      await this.$RCLiveRoomLib.rejectRequestSeat(item.userId);
+      //this.$data.isActive = false;
+      console.log("refused", item);
+      this.$emit("updateConnetWheat");
+    },
     userclick: async function (item) {
+      console.log(item);
+      console.log("refused not", this.$RCLiveRoomLib);
       switch (item.key) {
         case "接受":
           try {
-            await this.$RCVoiceRoomLib.acceptRequestSeat(item.userId);
+            if (
+              this.$store.state.roomType == "live" &&
+              this.$RCLiveRoomLib.im.seatInfoList[1].userId != ""
+            ) {
+              this.$store.dispatch("showToast", {
+                value: "麦位已满",
+                time: 2000,
+              });
+              return;
+            }
+            console.log();
+            if (this.$store.state.roomType == "live") {
+              await this.$RCLiveRoomLib.acceptRequestSeat(item.userId);
+            } else {
+              await this.$RCVoiceRoomLib.acceptRequestSeat(item.userId);
+            }
+
+            this.$store.state.onLink = true;
             this.$store.dispatch("showToast", {
               value: "融云 RTC: 用户连线成功",
               time: 1000,
             });
+            this.$emit("updateConnetWheat");
           } catch (err) {
             console.log("err:", err);
           }
@@ -50,7 +89,12 @@ export default {
           break;
         case "邀请":
           try {
-            await this.$RCVoiceRoomLib.pickUserToSeat(item.userId);
+            if (this.$store.state.roomType == "live") {
+              await this.$RCLiveRoomLib.pickUserToSeat(item.userId);
+              this.$store.state.picking = item.userId;
+            } else {
+              await this.$RCVoiceRoomLib.pickUserToSeat(item.userId);
+            }
             this.$store.dispatch("showToast", {
               value: "融云 RTC: 已邀请上麦",
               time: 1000,
@@ -124,5 +168,8 @@ export default {
   border-radius: 0.2rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.14rem;
+}
+.refused {
+  right: 1.03rem;
 }
 </style>

@@ -2,6 +2,7 @@
   <div class="UserClickEmptySeat">
     <el-drawer
       :modal="false"
+      class="drawerWrapperControl"
       :visible.sync="UserClickEmptySeat"
       :direction="direction"
       :show-close="false"
@@ -109,6 +110,11 @@ export default {
 .UserClickEmptySeat {
   text-align: center;
   overflow: hidden;
+}
+.drawerWrapperControl {
+  position: relative;
+  max-width: 375px;
+  left: calc(50vw - 187.5px) !important;
 }
 
 .UserClickEmptySeat /deep/ .el-drawer {

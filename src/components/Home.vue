@@ -32,11 +32,11 @@
         </div>
         <div class="chatRoomRightImg"></div>
       </div>
-      <!-- <div
+      <div
         class="liveVideo"
         :style="{ backgroundImage: 'url(' + liveVideoImg + ')' }"
         @click="clickLiveVideo"
-      ></div> -->
+      ></div>
       <!-- <div
         class="voiceRadio"
         :style="{ backgroundImage: 'url(' + voiceRadioImg + ')' }"
@@ -127,6 +127,15 @@ export default {
         this.$router.push("/login");
         return;
       }
+      if (this.$store.state.roomType != "voice") {
+        this.$store.dispatch("getOwerDisconnet", true).then(() => {
+          this.$RCLiveRoomLib.im.body.disconnect().then(() => {
+            this.$store.dispatch("getRoomType", "voice");
+            // this.$RCVoiceRoomLib.connect(this.$store.state.userInfo.imToken);
+            this.$RongIMLib.connect(this.$store.state.userInfo.imToken);
+          });
+        });
+      }
       this.$router.push("/room");
     },
     lll() {
@@ -136,6 +145,14 @@ export default {
       if (!this.$store.state.userInfo.authorization) {
         this.$router.push("/login");
         return;
+      }
+      if (this.$store.state.roomType != "live") {
+        this.$store.dispatch("getOwerDisconnet", true).then(() => {
+          this.$RCVoiceRoomLib.im.body.disconnect().then(() => {
+            this.$RCLiveRoomLib.connect(this.$store.state.userInfo.imToken);
+            this.$store.dispatch("getRoomType", "live");
+          });
+        });
       }
       this.$router.push("/room?roomType=liveRoom");
     },

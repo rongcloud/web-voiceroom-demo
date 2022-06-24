@@ -1,6 +1,6 @@
 <template>
   <div class="CallRoom">
-    <div class="CallRoom-noRoom" v-if="keepShow">
+    <div class="CallRoom-noRoom" @click="getRoomList(1)" v-if="keepShow">
       <span class="CallRoom-noRoom-value">请创建房间</span>
     </div>
     <scroller
@@ -27,6 +27,7 @@
 import RoomTab from "../roomTab/index.vue";
 import BScroll from "better-scroll";
 import request from "../../../request/index";
+import { GetQueryString } from "../../../utils/utils";
 export default {
   name: "CallRoom",
   data: function () {
@@ -70,11 +71,20 @@ export default {
   // eslint-disable-next-line vue/no-dupe-keys
   methods: {
     getRoomList: function (page) {
+      // console.log(this.authorizationVal);
+      let reqObj = {
+        page: page,
+        size: this.size,
+      };
+      if (
+        //直播房间
+        GetQueryString("roomType") &&
+        GetQueryString("roomType") == "liveRoom"
+      ) {
+        reqObj.type = 3;
+      }
       request
-        .roomList({
-          page: page,
-          size: this.size,
-        })
+        .roomList(reqObj)
         .then((response) => {
           this.dataList = response.data.data;
           if (page == 1) {
@@ -88,9 +98,11 @@ export default {
           response.data.data.rooms.length < 10
             ? (this.roomListLength = true)
             : (this.roomListLength = false);
+          // store.actions.changesVal([]);
         })
         .catch((err) => {
-          alert("请求失败", err);
+          console.error("请求失败", err);
+          // alert("请求失败", err);
         });
     },
     joinchatRoom: function (roomId) {
@@ -98,7 +110,18 @@ export default {
         .roominformation({ roomId: roomId })
         .then(async (res) => {
           if (res.data.code == 10000) {
-            await this.$RCVoiceRoomLib.joinRoom(roomId);
+            if (
+              //直播房间
+              GetQueryString("roomType") &&
+              GetQueryString("roomType") == "liveRoom"
+            ) {
+              this.$router.push("/live?roomid=" + roomId);
+              return;
+            } else {
+              await this.$RCVoiceRoomLib.joinRoom(roomId);
+              this.$router.push("/room/house");
+            }
+          //  await this.$RCVoiceRoomLib.joinRoom(roomId);重复调用了。
             let txtEnter = {
               userId: this.$RCVoiceRoomLib.im.userId,
               userName: this.$store.state.userInfo.userName,

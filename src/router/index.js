@@ -7,6 +7,7 @@ import House from "../pages/house";
 import RoomOver from "../components/roomOver";
 import VueRouter from 'vue-router'
 const router = new VueRouter({
+  // mode: 'hash',
   // eslint-disable-next-line no-undef
   base: __dirname,
   routes: [

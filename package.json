@@ -1,6 +1,6 @@
 {
-  "name": "rc_voice_room_demo",
-  "version": "0.1.0",
+  "name": "rcrtc_demo",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,15 +8,17 @@
     "lint": "eslint --fix --ext .js,.vue src"
   },
   "dependencies": {
-    "@rongcloud/imlib-next": "^5.1.2",
-    "@rongcloud/plugin-rtc": "^5.3.1",
-    "@rongcloud/rcvoiceroomlib-v1": "^2.0.1",
+    "@rongcloud/imlib-next": "^5.2.1",
+    "@rongcloud/plugin-rtc": "^5.3.2",
+    "@rongcloud/rcliveroomlib": "^1.0.14",
+    "@rongcloud/rcvoiceroomlib-v1": "^2.0.4",
     "axios": "^0.21.1",
     "better-scroll": "^2.4.2",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.6",
-    "eslint-plugin-vue": "^7.17.0",
     "js-md5": "^0.7.3",
+    "recordrtc": "^5.6.2",
+    "vconsole": "^3.11.0",
     "vue": "^2.6.11",
     "vue-router": "^3.5.2",
     "vue-scroller": "^2.2.4",
@@ -24,9 +26,7 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "eslint": "^7.32.0",
     "vue-template-compiler": "^2.6.11"
   },
   "browserslist": [

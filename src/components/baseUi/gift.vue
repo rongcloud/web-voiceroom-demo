@@ -20,7 +20,6 @@
             height="25px"
             style="position: absolute; left: 5px; top: 4px; border-radius: 20px"
           />
-          <!-- <div>{{ item }}</div> -->
           <div
             v-if="k == 0 && item['creatuser']"
             class="micNum w2"
@@ -29,14 +28,14 @@
             房主
           </div>
           <div
-            v-if="k == 0 && !item['creatuser']"
+            v-if="k == 0 && !item['creatuser'] && !item['index']"
             class="micNum w2"
             :class="{ isSelected: giftReceiver[k] }"
           >
             观众
           </div>
           <div
-            v-if="k != 0 && item['index']"
+            v-if="item['index']"
             class="micNum w1"
             :class="{ isSelected: giftReceiver[k] }"
           >
@@ -96,7 +95,7 @@
     </div>
     <div class="sendContorl">
       <div class="numBtn" @click="showSetPanel">{{ currentNumSet }}</div>
-      <div class="sendBtn" @click.stop="sendGift">赠送</div>
+      <div class="sendBtn" @click="sendGift">赠送</div>
       <div class="numSet" v-if="showSet">
         <input
           class="numSetItem numInput"
@@ -124,7 +123,6 @@
 import giftData from "./giftData.json";
 // import micData from "./micInfo.json"; //mock麦位信息
 import Request from "../../request";
-import config from "../../config";
 export default {
   name: "giftPanel",
   data: function () {
@@ -145,8 +143,7 @@ export default {
       isSendAll: false,
       defaultAvatarUrl:
         "https://cdn.ronghub.com/demo/default/rce_default_avatar.png",
-      defaultAddress: config.picPath,
-      // defaultAddress: "/api/file/show?path=",
+      defaultAddress: "",
     };
   },
   props: {
@@ -192,126 +189,64 @@ export default {
         numIndex = numIndex + 8;
       }
       if (this.isSendAll) {
-        if (this.$store.state.roomType == "live") {
-          this.$RCLiveRoomLib.emit("MessageReceived", {
-            //发本地
-            //模拟本地消息发送
-            messageType: "RC:Chatroom:GiftAll",
-            isOffLineMessage: false,
-            content: {
-              userId: this.$store.state.userInfo.userId, // 本人
-              userName: this.$store.state.userInfo.userName,
-              giftName: giftData[numIndex].name,
-              giftId: giftData[numIndex].id,
-              number: this.$data.currentNum,
-              price: giftData[numIndex].price,
-            },
-          });
-          let c = {
+        this.$RCVoiceRoomLib.emit("MessageReceived", {
+          //发本地
+          //模拟本地消息发送
+          messageType: "RC:Chatroom:GiftAll",
+          isOffLineMessage: false,
+          content: {
             userId: this.$store.state.userInfo.userId, // 本人
             userName: this.$store.state.userInfo.userName,
-            giftId: giftData[numIndex].id,
             giftName: giftData[numIndex].name,
+            giftId: giftData[numIndex].id,
             number: this.$data.currentNum,
             price: giftData[numIndex].price,
-          };
-          this.$RCLiveRoomLib.im.messageUpdate("RC:Chatroom:GiftAll", c); //发im
-        } else {
+          },
+        });
+        let c = {
+          userId: this.$store.state.userInfo.userId, // 本人
+          userName: this.$store.state.userInfo.userName,
+          giftId: giftData[numIndex].id,
+          giftName: giftData[numIndex].name,
+          number: this.$data.currentNum,
+          price: giftData[numIndex].price,
+        };
+        this.$RCVoiceRoomLib.im.messageUpdate("RC:Chatroom:GiftAll", c); //发im
+      }
+      for (var i in this.$data.giftReceiver) {
+        if (!this.isSendAll) {
           this.$RCVoiceRoomLib.emit("MessageReceived", {
             //发本地
             //模拟本地消息发送
-            messageType: "RC:Chatroom:GiftAll",
+            messageType: "RC:Chatroom:Gift",
             isOffLineMessage: false,
             content: {
               userId: this.$store.state.userInfo.userId, // 本人
               userName: this.$store.state.userInfo.userName,
+              targetName: this.micData[i].userName,
+              targetId: this.micData[i].userId,
               giftName: giftData[numIndex].name,
-              giftId: giftData[numIndex].id,
               number: this.$data.currentNum,
-              price: giftData[numIndex].price,
             },
           });
           let c = {
             userId: this.$store.state.userInfo.userId, // 本人
             userName: this.$store.state.userInfo.userName,
+            targetId: this.micData[i].userId,
+            targetName: this.micData[i].userName,
             giftId: giftData[numIndex].id,
             giftName: giftData[numIndex].name,
             number: this.$data.currentNum,
             price: giftData[numIndex].price,
           };
-          this.$RCVoiceRoomLib.im.messageUpdate("RC:Chatroom:GiftAll", c); //发im
+          this.$RCVoiceRoomLib.im.messageUpdate("RC:Chatroom:Gift", c); //发im
         }
-      }
-
-      for (var i in this.$data.giftReceiver) {
-        if (!this.isSendAll) {
-          // console.log("this.$store.state.userInfo.userId,", this.micData);
-          if (this.$store.state.roomType == "live") {
-            this.$RCLiveRoomLib.emit("onMessageReceived", {
-              //发本地
-              //模拟本地消息发送
-
-              messageType: "RC:Chatroom:Gift",
-              isOffLineMessage: false,
-              content: {
-                userId: this.$store.state.userInfo.userId, // 本人
-                userName: this.$store.state.userInfo.userName,
-                targetName: this.micData[i].userName,
-                targetId: this.micData[i].userId,
-                giftName: giftData[numIndex].name,
-                number: this.$data.currentNum,
-              },
-            });
-            console.log("---,");
-            let c = {
-              userId: this.$store.state.userInfo.userId, // 本人
-              userName: this.$store.state.userInfo.userName,
-              targetId: this.micData[i].userId,
-              targetName: this.micData[i].userName,
-              giftId: giftData[numIndex].id,
-              giftName: giftData[numIndex].name,
-              number: this.$data.currentNum,
-              price: giftData[numIndex].price,
-            };
-            console.log("rcgift=-=-=-=-=-=-");
-            this.$RCLiveRoomLib.im.messageUpdate("RC:Chatroom:Gift", c); //发im
-          } else {
-            this.$RCVoiceRoomLib.emit("MessageReceived", {
-              //发本地
-              //模拟本地消息发送
-
-              messageType: "RC:Chatroom:Gift",
-              isOffLineMessage: false,
-              content: {
-                userId: this.$store.state.userInfo.userId, // 本人
-                userName: this.$store.state.userInfo.userName,
-                targetName: this.micData[i].userName,
-                targetId: this.micData[i].userId,
-                giftName: giftData[numIndex].name,
-                number: this.$data.currentNum,
-              },
-            });
-            let c = {
-              userId: this.$store.state.userInfo.userId, // 本人
-              userName: this.$store.state.userInfo.userName,
-              targetId: this.micData[i].userId,
-              targetName: this.micData[i].userName,
-              giftId: giftData[numIndex].id,
-              giftName: giftData[numIndex].name,
-              number: this.$data.currentNum,
-              price: giftData[numIndex].price,
-            };
-            this.$RCVoiceRoomLib.im.messageUpdate("RC:Chatroom:Gift", c); //发im
-          }
-        }
-
         let giftdata = {
           giftId: giftData[numIndex].id,
           num: this.$data.currentNum,
           roomId: this.roomId,
           toUid: this.micData[i].userId,
         };
-        console.log("礼物发送数据：", giftdata);
         Request.sendGift(giftdata).then(async (res) => {
           //发服务端
           // console.log("发送礼物接口成功", res);
@@ -320,7 +255,6 @@ export default {
           }
         });
       }
-
       this.$emit("hideGift");
     },
     hideGift: function () {
@@ -359,7 +293,6 @@ export default {
           delete this.$data.giftReceiver[i];
         }
       }
-
       this.$forceUpdate();
     },
     selectGift: function (num, page) {
@@ -375,7 +308,6 @@ export default {
       }
     },
     setNum: function (k) {
-      console.log("setgiftNum:", k);
       if (k == "") {
         k = 1;
       }
@@ -384,182 +316,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.sendTo {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  font-size: 14px;
-  color: #fff;
-  background: rgb(255, 255, 255, 0.16);
-}
-.sendAll {
-  position: absolute;
-  width: 55px;
-  height: 31px;
-  right: 12px;
-  line-height: 31px;
-  text-align: center;
-  top: 9px;
-  border: #fff 1px solid;
-  border-radius: 20px;
-  background: #333;
-}
-.micPosition {
-  width: 35px;
-  height: 50px;
-  display: inline-block;
-  text-align: center;
-  position: relative;
-}
-.micNum {
-  width: fit-content;
-  text-align: center;
-  line-height: 16px;
-  font-size: 10px;
-  margin-top: 30px;
-  margin-left: auto;
-  margin-right: auto;
-  background: rgba(3, 6, 47, 0.4);
-  border-radius: 17px;
-}
-.w2 {
-  width: 34px;
-}
-.w1 {
-  width: 17px;
-}
-.isSelected {
-  background: #d64186;
-}
-.giftpage {
-  position: absolute;
-  top: 0px;
-  z-index: 20000;
-  width: 100%;
-  height: 100vh;
-  max-width: 375px;
-  min-width: none;
-}
-.shadow {
-  position: absolute;
-  top: 0px;
-  width: 100%;
-  height: calc(100vh - 350px);
-  background: rgb(0, 0, 0, 0.5);
-}
-.giftContainer {
-  position: absolute;
-  bottom: 0px;
-  height: 350px;
-  width: 100%;
-  background: linear-gradient(90deg, #d5408a -186.8%, #1a1d3d 69.32%);
-  z-index: 100;
-}
-.mainContainer {
-  position: absolute;
-  width: 100%;
-  top: 50px;
-  height: 250px;
-  overflow: hidden;
-}
-.giftPages {
-  position: absolute;
-  font-size: 12px;
-  width: 100%;
-}
-.giftItems {
-  position: relative;
-  float: left;
-  width: 23%;
-  height: 110px;
-  margin: 1%;
-  color: #fff;
-  text-align: center;
-}
-.giftborder {
-  border: none;
-  border-radius: 5px;
-}
-.giftTitle {
-  margin-top: -7px;
-}
-.current {
-  border: #d64186 1px solid;
-  border-radius: 5px;
-}
-.pageContorl {
-  position: absolute;
-  text-align: center;
-  width: 90%;
-  padding-left: 45%;
-  bottom: 40px;
-}
-.pageButton {
-  margin: 6px;
-  width: 12px;
-  height: 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.3);
-  float: left;
-}
-.active {
-  background: rgb(255, 255, 255, 1);
-}
-.sendContorl {
-  position: absolute;
-  z-index: 10001;
-  width: 120px;
-  height: 34px;
-  right: 12px;
-  bottom: 12px;
-  border-radius: 37px;
-  border: #d5408a 1px solid;
-  z-index: 20001;
-}
-.numBtn {
-  position: absolute;
-  width: 50%;
-  left: 0px;
-  font-size: 14px;
-  text-align: center;
-  line-height: 34px;
-  color: #fff;
-}
-.sendBtn {
-  position: absolute;
-  width: 50%;
-  background: #d5408a;
-  font-size: 14px;
-  text-align: center;
-  border-radius: 0px 30px 30px 0px;
-  line-height: 34px;
-  color: #fff;
-  right: 0px;
-}
-.numSet {
-  position: absolute;
-  background: #fff;
-  border-radius: 5px;
-  font-size: 12px;
-  text-align: center;
-  color: #333;
-  width: 123px;
-  height: 195px;
-  top: -200px;
-}
-.numSetItem {
-  width: 90%;
-  height: 26px;
-  line-height: 26px;
-  margin: 2% auto 2% auto;
-}
-.numInput {
-  text-align: center;
-}
-.setActive {
-  background: rgba(233, 43, 136, 0.6);
-  border: 1px #d5408a solid;
-  border-radius: 5px;
-}
-</style>
